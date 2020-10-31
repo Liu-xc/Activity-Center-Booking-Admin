@@ -19,13 +19,13 @@
         @keyup.enter.native="handleFilter"
       />
       <el-select
-        v-model="listQuery.importance"
+        v-model="listQuery.campus"
         placeholder="校区"
         clearable
         style="width: 150px"
         class="filter-item"
       >
-        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />
+        <el-option v-for="item in ['清水河', '沙河']" :key="item" :label="item" :value="item" />
       </el-select>
       <el-select
         v-model="listQuery.type"
@@ -34,12 +34,7 @@
         class="filter-item"
         style="width: 200px"
       >
-        <el-option
-          v-for="item in calendarTypeOptions"
-          :key="item.key"
-          :label="item.display_name+'('+item.key+')'"
-          :value="item.key"
-        />
+        <el-option v-for="item in ['求实厅', '咖啡馆']" :key="item" :label="item" :value="item" />
       </el-select>
       <el-select
         v-model="listQuery.type"
@@ -48,12 +43,7 @@
         class="filter-item"
         style="width: 130px"
       >
-        <el-option
-          v-for="item in calendarTypeOptions"
-          :key="item.key"
-          :label="item.display_name+'('+item.key+')'"
-          :value="item.key"
-        />
+        <el-option v-for="item in ['待审核', '通过', '不通过']" :key="item" :label="item" :value="item" />
       </el-select>
 
       <el-button
@@ -83,14 +73,7 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column
-        :label="$t('table.id')"
-        prop="id"
-        sortable="custom"
-        align="center"
-        width="80"
-        :class-name="getSortClass('id')"
-      >
+      <el-table-column :label="$t('table.id')" prop="id" align="center" width="80">
         <template slot-scope="{row}">
           <span>{{ row.id }}</span>
         </template>
@@ -100,43 +83,38 @@
       </el-table-column>
       <el-table-column align="center" label="提交时间" width="200px">
         <template slot-scope="{row}">
-          <span>{{ row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <span>{{ row.requestTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="申请部门" width="280px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.author }}</span>
+          <span>{{ row.department }}</span>
         </template>
       </el-table-column>
       <el-table-column label="使用时间" width="400px" align="center">
         <template slot-scope="{row}">
-          <span style="color:red;">{{ row.reviewer }}</span>
+          <span>{{ row.requestPeriod[0]|parseTime('{m}-{d} {h}:{i}') }} —— {{ row.requestPeriod[1]|parseTime('{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="场地" width="250px">
         <template slot-scope="{row}">
-          <svg-icon
-            v-for="n in +row.importance"
-            :key="n"
-            icon-class="star"
-            class="meta-item__icon"
-          />
+          <span>{{ row.site }}</span>
         </template>
       </el-table-column>
       <el-table-column label="状态" align="center" width="160">
         <template slot-scope="{row}">
           <span
-            v-if="row.pageviews"
+            v-if="row.status"
             class="link-type"
-            @click="handleFetchPv(row.pageviews)"
-          >{{ row.pageviews }}</span>
+            @click="handleFetchPv(row.status)"
+          >{{ row.status }}</span>
           <span v-else>0</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="201" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">详情</el-button>
-          <el-button size="mini" type="success" @click="handleModifyStatus(row,'published')">审核</el-button>
+          <el-button size="mini" type="success" @click="audit(row)">审核</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -146,80 +124,14 @@
         :total="total"
         :page.sync="listQuery.page"
         :limit.sync="listQuery.limit"
+        :page-sizes="[10, 15, 20, 30, 40, 50]"
         class="pages"
         @pagination="getList"
       />
     </div>
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form
-        ref="dataForm"
-        :rules="rules"
-        :model="temp"
-        label-position="left"
-        label-width="70px"
-        style="width: 400px; margin-left:50px;"
-      >
-        <el-form-item :label="$t('table.type')" prop="type">
-          <el-select v-model="temp.type" class="filter-item" placeholder="Please select">
-            <el-option
-              v-for="item in calendarTypeOptions"
-              :key="item.key"
-              :label="item.display_name"
-              :value="item.key"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('table.date')" prop="timestamp">
-          <el-date-picker
-            v-model="temp.timestamp"
-            type="datetime"
-            placeholder="Please pick a date"
-          />
-        </el-form-item>
-        <el-form-item :label="$t('table.title')" prop="title">
-          <el-input v-model="temp.title" />
-        </el-form-item>
-        <el-form-item :label="$t('table.status')">
-          <el-select v-model="temp.status" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('table.importance')">
-          <el-rate
-            v-model="temp.importance"
-            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-            :max="3"
-            style="margin-top:8px;"
-          />
-        </el-form-item>
-        <el-form-item :label="$t('table.remark')">
-          <el-input
-            v-model="temp.remark"
-            :autosize="{ minRows: 2, maxRows: 4}"
-            type="textarea"
-            placeholder="Please input"
-          />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
-        <el-button
-          type="primary"
-          @click="dialogStatus==='create'?createData():updateData()"
-        >{{ $t('table.confirm') }}</el-button>
-      </div>
-    </el-dialog>
-
-    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
-      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="key" label="Channel" />
-        <el-table-column prop="pv" label="Pv" />
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false">{{ $t('table.confirm') }}</el-button>
-      </span>
-    </el-dialog>
+    <el-dialog title="详情" :visible.sync="dialogFormVisible" />
+    <el-dialog title="审核" :visible.sync="auditDialogVisible" />
   </div>
 </template>
 
@@ -228,19 +140,6 @@ import { fetchList, fetchPv, createArticle, updateArticle } from '@/api/article'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-
-const calendarTypeOptions = [
-  { key: 'CN', display_name: 'China' },
-  { key: 'US', display_name: 'USA' },
-  { key: 'JP', display_name: 'Japan' },
-  { key: 'EU', display_name: 'Eurozone' }
-]
-
-// arr to obj, such as { CN : "China", US : "USA" }
-const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
-  acc[cur.key] = cur.display_name
-  return acc
-}, {})
 
 export default {
   name: 'ComplexTable',
@@ -254,13 +153,11 @@ export default {
         deleted: 'danger'
       }
       return statusMap[status]
-    },
-    typeFilter(type) {
-      return calendarTypeKeyValue[type]
     }
   },
   data() {
     return {
+      auditDialogVisible: false,
       checkAll: false,
       tableKey: 0,
       list: null,
@@ -269,19 +166,13 @@ export default {
       listQuery: {
         page: 1,
         limit: 15,
-        importance: undefined,
         title: undefined,
         type: undefined,
         sort: '+id'
       },
-      importanceOptions: [1, 2, 3],
-      calendarTypeOptions,
-      sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
-      statusOptions: ['published', 'draft', 'deleted'],
       showReviewer: false,
       temp: {
         id: undefined,
-        importance: 1,
         remark: '',
         timestamp: new Date(),
         title: '',
@@ -308,6 +199,10 @@ export default {
     this.getList()
   },
   methods: {
+    audit(row) {
+      this.auditDialogVisible = true
+      console.log(this.list)
+    },
     getList() {
       this.listLoading = true
       fetchList(this.listQuery).then(response => {
@@ -348,7 +243,6 @@ export default {
     resetTemp() {
       this.temp = {
         id: undefined,
-        importance: 1,
         remark: '',
         timestamp: new Date(),
         title: '',
@@ -428,8 +322,8 @@ export default {
     handleDownload() {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['timestamp', 'title', 'type', 'importance', 'status']
-        const filterVal = ['timestamp', 'title', 'type', 'importance', 'status']
+        const tHeader = ['提交时间', '申请部门', '使用时间', '场地', '审核状态']
+        const filterVal = ['提交时间', '申请部门', '使用时间', '场地', '审核状态']
         const data = this.formatJson(filterVal)
         excel.export_json_to_excel({
           header: tHeader,
