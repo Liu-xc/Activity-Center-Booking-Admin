@@ -49,28 +49,26 @@ export const constantRoutes = [
     hidden: true
   },
   {
-    path: '/',
+    path: '/dashboard',
     component: Layout,
-    redirect: '/dashboard',
     children: [
       {
         path: 'dashboard',
-        component: () => import('@/views/dashboard/index'),
-        name: 'Dashboard',
+        component: () => import('@/views/table/complex-table'),
+        name: 'ComplexTable',
         meta: { title: '预约管理', icon: 'el-icon-s-check', affix: true }
       }
     ]
   },
   {
-    path: '/',
+    path: '/account',
     component: Layout,
-    redirect: '/account',
     children: [
       {
         path: 'account',
         component: () => import('@/views/account/index'),
         name: 'Account',
-        meta: { title: '账号管理', icon: 'el-icon-s-check', affix: false }
+        meta: { title: '账号管理', icon: 'el-icon-s-custom', affix: false }
       }
     ]
   }

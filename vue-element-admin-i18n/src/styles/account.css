@@ -1,0 +1,9 @@
+#account {
+  padding-top: 150px;
+}
+
+#account .avartar {
+  padding-bottom: 30px;
+  display: flex;
+  justify-content: center;
+}
