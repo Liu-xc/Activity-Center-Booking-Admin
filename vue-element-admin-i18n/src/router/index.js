@@ -57,7 +57,20 @@ export const constantRoutes = [
         path: 'dashboard',
         component: () => import('@/views/dashboard/index'),
         name: 'Dashboard',
-        meta: { title: 'dashboard', icon: 'dashboard', affix: true }
+        meta: { title: '预约管理', icon: 'el-icon-s-check', affix: true }
+      }
+    ]
+  },
+  {
+    path: '/',
+    component: Layout,
+    redirect: '/account',
+    children: [
+      {
+        path: 'account',
+        component: () => import('@/views/account/index'),
+        name: 'Account',
+        meta: { title: '账号管理', icon: 'el-icon-s-check', affix: false }
       }
     ]
   }
