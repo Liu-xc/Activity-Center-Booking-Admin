@@ -49,7 +49,7 @@ export const constantRoutes = [
     hidden: true
   },
   {
-    path: '/dashboard',
+    path: '/',
     component: Layout,
     children: [
       {
@@ -63,9 +63,10 @@ export const constantRoutes = [
   {
     path: '/account',
     component: Layout,
+    redirect: '/account/index',
     children: [
       {
-        path: 'account',
+        path: 'index',
         component: () => import('@/views/account/index'),
         name: 'Account',
         meta: { title: '账号管理', icon: 'el-icon-s-custom', affix: false }
