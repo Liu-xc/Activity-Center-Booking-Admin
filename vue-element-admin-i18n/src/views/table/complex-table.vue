@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-button type="primary" class="group-audit filter-item">审核选中项</el-button>
+      <el-button type="primary" class="group-audit filter-item" @click="auditGroup">审核选中项</el-button>
       <!-- $t是用与语言转换的 -->
       <el-input
         v-model="listQuery.title"
@@ -87,34 +87,34 @@
           <span>{{ row.requestTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="申请部门" width="280px" align="center">
+      <el-table-column label="申请部门" width="220px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.department }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="使用时间" width="400px" align="center">
+      <el-table-column label="使用时间" width="300px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.requestPeriod[0]|parseTime('{m}-{d} {h}:{i}') }} —— {{ row.requestPeriod[1]|parseTime('{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="场地" width="250px">
+      <el-table-column align="center" label="场地" width="160px">
         <template slot-scope="{row}">
           <span>{{ row.site }}</span>
         </template>
       </el-table-column>
+      <el-table-column align="center" label="活动名称" width="250px">
+        <template slot-scope="{row}">
+          <span>{{ row.activityName }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="状态" align="center" width="160">
         <template slot-scope="{row}">
-          <span
-            v-if="row.status"
-            class="link-type"
-            @click="handleFetchPv(row.status)"
-          >{{ row.status }}</span>
-          <span v-else>0</span>
+          <span class="link-type">{{ statusList[row.status] }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="201" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">详情</el-button>
+          <el-button type="primary" size="mini" @click="checkDetail(row)">详情</el-button>
           <el-button size="mini" type="success" @click="audit(row)">审核</el-button>
         </template>
       </el-table-column>
@@ -131,8 +131,99 @@
       />
     </div>
 
-    <el-dialog title="详情" :visible.sync="dialogFormVisible" />
-    <el-dialog title="审核" :visible.sync="auditDialogVisible" />
+    <el-dialog title="详情" :visible.sync="dialogFormVisible">
+      <div v-if="imgsToCheck.length">
+        <template v-for="item of imgsToCheck">
+          <el-image
+            :key="item"
+            :preview-src-list="imgsToCheck"
+            class="detail-img"
+            fit="contain"
+            :src="item"
+            alt
+          >
+            <div slot="error" class="image-slot">
+              <i class="el-icon-picture-outline" />
+            </div>
+          </el-image>
+        </template>
+      </div>
+      <div v-else>未上传图片</div>
+    </el-dialog>
+    <el-dialog title="审核" :visible.sync="auditDialogVisible">
+      <el-form ref="form" label-width="80px" size="mini">
+        <el-form-item label="申请时间">
+          <el-date-picker
+            v-model="itemToAudit.requestTime"
+            type="date"
+            placeholder="选择日期"
+            style="width: 100%;"
+            format="yyyy-MM-dd HH:mm"
+            disabled
+          />
+        </el-form-item>
+        <el-form-item label="申请部门">
+          <el-input v-model="itemToAudit.department" disabled />
+        </el-form-item>
+        <el-form-item label="活动名称">
+          <el-input v-model="itemToAudit.activityName" disabled />
+        </el-form-item>
+        <el-form-item label="活动场地">
+          <el-select v-model="itemToAudit.site" placeholder="活动场地" disabled>
+            <el-option :label="itemToAudit.site" :value="itemToAudit.site" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="活动时间">
+          <el-col :span="11">
+            <el-date-picker
+              v-model="itemToAudit.requestPeriod[0]"
+              type="date"
+              placeholder="选择日期"
+              style="width: 100%;"
+              format="yyyy-MM-dd HH:mm"
+              disabled
+            />
+          </el-col>
+          <el-col class="line" :span="2">-</el-col>
+          <el-col :span="11">
+            <el-date-picker
+              v-model="itemToAudit.requestPeriod[1]"
+              type="date"
+              placeholder="选择日期"
+              style="width: 100%;"
+              format="yyyy-MM-dd HH:mm"
+              disabled
+            />
+          </el-col>
+        </el-form-item>
+        <el-form-item label="审核状态">
+          <el-radio-group v-model="itemToAudit.status">
+            <el-radio :label="0">通过</el-radio>
+            <el-radio :label="1">不通过</el-radio>
+            <el-radio :label="2">待审核</el-radio>
+            <el-radio :label="3">未上传图片</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="备注">
+          <el-input v-model="itemToAudit.auditComment" />
+        </el-form-item>
+        <el-form-item label="查看详情">
+          <el-button type="primary" size="mini" @click="checkDetail(itemToAudit)">详情</el-button>
+        </el-form-item>
+        <el-form-item size="large">
+          <el-button type="primary" @click="onSubmitAudit">提交</el-button>
+        </el-form-item>
+      </el-form>
+      <div class="audit-pagination">
+        <el-pagination
+          small
+          :page-size="1"
+          layout="prev, pager, next"
+          :total="auditListLen"
+          @current-change="changeAuditIndex"
+        />
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -158,42 +249,35 @@ export default {
   },
   data() {
     return {
-      checkedList: [],
+      auditListLen: 1, // 要审核的列表长度
+      conflictList: [], // 冲突列表
+      checkedList: [], // 选中的列表项
       auditDialogVisible: false,
+      auditChecked: false, // 区分展开Dialog的是批量审核还是冲突审核
       checkAll: false,
+      statusList: ['通过', '不通过', '待审核', '未上传图片'],
+      itemToAudit: {
+        requestTime: '',
+        requestPeriod: [undefined, undefined],
+        department: '',
+        activityName: '',
+        status: 2,
+        site: '',
+        imgs: []
+      },
+      imgsToCheck: [],
       tableKey: 0,
-      list: null,
+      list: null, // 数据
       total: 0,
       listLoading: true,
-      listQuery: {
+      listQuery: { // 请求参数
         page: 1,
         limit: 15,
         title: undefined,
         type: undefined,
         sort: '+id'
       },
-      showReviewer: false,
-      temp: {
-        id: undefined,
-        remark: '',
-        timestamp: new Date(),
-        title: '',
-        type: '',
-        status: 'published'
-      },
       dialogFormVisible: false,
-      dialogStatus: '',
-      textMap: {
-        update: 'Edit',
-        create: 'Create'
-      },
-      dialogPvVisible: false,
-      pvData: [],
-      rules: {
-        type: [{ required: true, message: 'type is required', trigger: 'change' }],
-        timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
-        title: [{ required: true, message: 'title is required', trigger: 'blur' }]
-      },
       downloadLoading: false
     }
   },
@@ -202,15 +286,45 @@ export default {
   },
   methods: {
     audit(row) {
+      // 点击审核时获取对应的数据项，应该现在数据库中查找是否有与之冲突的项
+      // 然后再展示出来进行审核
+      // 需要一个loading效果
+      this.auditChecked = false
       this.auditDialogVisible = true
-      console.log(this.list)
+      this.getConflictList().then(list => {
+        this.auditListLen = list.length
+        this.conflictList = list
+        this.itemToAudit = list[0]
+      })
     },
-    toggleCheck() {
-      console.log(event)
+    // 点击审核选中项时触发
+    auditGroup() {
+      // 如果没有选中的项就什么也不做
+      if (this.checkedList.length) {
+        this.auditChecked = true
+        this.auditDialogVisible = true
+        this.auditListLen = this.checkedList.length
+        this.itemToAudit = this.checkedList[0]
+      }
+      // 有空的话加一个提示信息
     },
+    // 表格的复选框选择时触发
     handleSelection(val) {
       this.checkedList = val
     },
+    // 当审核界面的分页器页数切换时触发
+    changeAuditIndex(val) {
+      this.itemToAudit = this.auditChecked ? this.checkedList[val - 1] : this.conflictList[val - 1]
+      console.log(this.itemToAudit)
+    },
+    onSubmitAudit() {
+
+    },
+    checkDetail(val) {
+      this.dialogFormVisible = true
+      this.imgsToCheck = val.imgs
+    },
+    // 获取数据
     getList() {
       this.listLoading = true
       fetchList(this.listQuery).then(response => {
@@ -251,6 +365,11 @@ export default {
           return v[j]
         }
       }))
+    },
+    getConflictList(row) {
+      // 获取参数（site，requestPeriod）
+      // 携带参数发送请求获取冲突数组
+      return Promise.resolve(this.list.slice(3, 6))
     }
   }
 }
@@ -274,5 +393,12 @@ export default {
 }
 .pages {
   margin: 0;
+}
+.audit-pagination {
+  display: flex;
+  justify-content: center;
+}
+.detail-img {
+  width: 100%;
 }
 </style>

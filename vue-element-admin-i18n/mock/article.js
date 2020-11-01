@@ -13,7 +13,10 @@ for (let i = 0; i < count; i++) {
     'department|1': ['教师工会', '班级', '学生会', '舞蹈社'],
     requestPeriod: [+Mock.Random.date('T'), +Mock.Random.date('T')],
     'site|1': ['求实厅', '九州厅', '咖啡馆'],
-    'status|1': ['待审核', '通过', '不通过', '未上传图片'],
+    'status|1': [0, 1, 2, 3],
+    'activityName|1': ['新年晚会', '成电讲坛', '迎新晚会', '艺术节'],
+    auditComment: Mock.Random.paragraph(1),
+    imgs: [Mock.Random.image(), Mock.Random.image(), Mock.Random.image()]
     // timestamp: +Mock.Random.date('T'),
     // author: '@first',
     // reviewer: '@first',
