@@ -8,15 +8,21 @@ const count = 100
 
 for (let i = 0; i < count; i++) {
   List.push(Mock.mock({
-    id: '@increment',
-    requestTime: +Mock.Random.date('T'),
-    'department|1': ['教师工会', '班级', '学生会', '舞蹈社'],
-    requestPeriod: [+Mock.Random.date('T'), +Mock.Random.date('T')],
-    'site|1': ['求实厅', '九州厅', '咖啡馆'],
-    'status|1': [0, 1, 2, 3],
-    'activityName|1': ['新年晚会', '成电讲坛', '迎新晚会', '艺术节'],
+    AppleID: '@increment',
+    SubmitTime: +Mock.Random.date('T'),
+    Start: +Mock.Random.date('T'),
+    End: +Mock.Random.date('T'),
+    'ReserveUser|1': ['教师工会', '班级', '学生会', '舞蹈社'],
+    'ReserveHall|1': ['求实厅', '九州厅', '咖啡馆'],
+    'ApproveStatus|1': ['通过', '不通过', '待审核', '未上传图片'],
+    'Activity|1': ['新年晚会', '成电讲坛', '迎新晚会', '艺术节'],
     auditComment: Mock.Random.paragraph(1),
-    imgs: [Mock.Random.image(), Mock.Random.image(), Mock.Random.image()]
+    imgs: [Mock.Random.image(), Mock.Random.image(), Mock.Random.image()],
+    conflict: {	// 冲突标志
+		  'isConflict|1': [true, false], // 是否有冲突
+		  'allHandled|1': [true, false] // 所有冲突项是否已经处理（只有一个通过，其余的不通过时设置为真）
+		}
+
     // timestamp: +Mock.Random.date('T'),
     // author: '@first',
     // reviewer: '@first',
@@ -26,7 +32,7 @@ for (let i = 0; i < count; i++) {
     // forecast: '@float(0, 100, 2, 2)',
     // importance: '@integer(1, 3)',
     // 'type|1': ['CN', 'US', 'JP', 'EU'],
-    // 'status|1': ['published', 'draft'],
+    // 'ApprovalStatus|1': ['published', 'draft'],
     // display_time: '@datetime',
     // comment_disabled: true,
     // pageviews: '@integer(300, 5000)',
@@ -40,20 +46,19 @@ module.exports = [
     url: '/vue-element-admin/article/list',
     type: 'get',
     response: config => {
-      const { importance, type, title, page = 1, limit = 20, sort } = config.query
+      const { ReserveDepartment, Activity, campus, ReserveHall, ApprovalStatus, DisplayPage = 1, DisplayRows = 20 } = config.query
 
       let mockList = List.filter(item => {
-        if (importance && item.importance !== +importance) return false
-        if (type && item.type !== type) return false
-        if (title && item.title.indexOf(title) < 0) return false
+        if (ReserveDepartment && item.ReserveDepartment !== ReserveDepartment) return false
+        if (Activity && item.Activity !== Activity) return false
+        if (campus && item.campus !== campus) return false
+        if (ReserveHall && item.ReserveHall !== ReserveHall) return false
+        if (ApprovalStatus && item.ApprovalStatus !== ApprovalStatus) return false
         return true
       })
 
-      if (sort === '-id') {
-        mockList = mockList.reverse()
-      }
 
-      const pageList = mockList.filter((item, index) => index < limit * page && index >= limit * (page - 1))
+      const pageList = mockList.filter((item, index) => index < DisplayRows * DisplayPage && index >= DisplayRows * (DisplayPage - 1))
 
       return {
         code: 20000,
