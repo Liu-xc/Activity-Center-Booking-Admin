@@ -25,7 +25,7 @@
         class="filter-item"
         @input="handleFilter"
       >
-        <el-option v-for="item in ['清水河', '沙河']" :key="item" :label="item" :value="item" />
+        <el-option v-for="item in campuses || Campuses" :key="item" :label="item" :value="item" />
       </el-select>
       <el-select
         v-model="listQuery.ReserveHall"
@@ -35,17 +35,17 @@
         style="width: 200px"
         @input="handleFilter"
       >
-        <el-option v-for="item in ['求实厅', '咖啡馆']" :key="item" :label="item" :value="item" />
+        <el-option v-for="item in halls || Halls" :key="item" :label="item" :value="item" />
       </el-select>
       <el-select
-        v-model="listQuery.ApprovalStatus"
+        v-model="listQuery.ApproveStatus"
         placeholder="审核状态"
         clearable
         class="filter-item"
         style="width: 130px"
         @input="handleFilter"
       >
-        <el-option v-for="item in auditStatus" :key="item" :label="item" :value="item" />
+        <el-option v-for="item in ApprovalStatus" :key="item" :label="item" :value="item" />
       </el-select>
 
       <el-button
@@ -236,6 +236,7 @@ import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 // import { ErrorCodes } from '../../utils/errorCodes'
+import { Campuses, Halls, QSHalls, SHHalls, ApprovalStatus } from './modules/StaticData'
 
 export default {
   name: 'ComplexTable',
@@ -259,7 +260,6 @@ export default {
       auditDialogVisible: false,
       auditChecked: false, // 区分展开Dialog的是批量审核还是冲突审核
       checkAll: false,
-      ApprovalStatusList: ['通过', '不通过', '待审核', '未上传图片'],
       itemToAudit: {
         requestTime: '',
         requestPeriod: [undefined, undefined],
@@ -281,12 +281,14 @@ export default {
         Activity: '',
         Campus: '',
         ReserveHall: '',
-        ApprovalStatus: ''
+        ApproveStatus: ''
       },
       dialogFormVisible: false,
       downloadLoading: false,
       searchTimer: null,
-      auditStatus: ['通过', '不通过', '待审核', '未上传图片']
+      Campuses, ApprovalStatus, Halls, QSHalls, SHHalls,
+      halls: this.Halls,
+      campuses: this.Campuses
     }
   },
   created() {
@@ -340,6 +342,7 @@ export default {
       this.imgsToCheck = val.imgs
     },
     handleFilter() {
+      this._handleCampusAndHalls()
       // 做一个防抖
       if (this.searchTimer) {
         clearTimeout(this.searchTimer)
@@ -393,6 +396,27 @@ export default {
       // 获取参数（ReserveHall，requestPeriod）
       // 携带参数发送请求获取冲突数组
       return Promise.resolve(this.list.slice(3, 6))
+    },
+    /* 解决校区和hall的关系 */
+    _handleCampusAndHalls() {
+      /* 判断校区和hall的关系 */
+      if (this.listQuery.Campus) {
+        /* 如果设置了校区 */
+        const index = this.Campuses.indexOf(this.listQuery.Campus)
+        this.halls = index === 0 ? this.QSHalls : this.SHHalls
+      } else if (this.listQuery.ReserveHall) {
+        /* 如果设置了厅 */
+        if (this.QSHalls.includes(this.listQuery.ReserveHall)) {
+          this.listQuery.Campus = this.Campuses[0]
+          this.campuses = [this.Campuses[0]]
+        } else if (this.SHHalls.includes(this.listQuery.ReserveHall)) {
+          this.listQuery.Campus = this.Campuses[1]
+          this.campuses = [this.Campuses[1]]
+        }
+      } else {
+        this.halls = this.Halls
+        this.campuses = this.Campuses
+      }
     }
   }
 }

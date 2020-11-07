@@ -13,7 +13,7 @@ for (let i = 0; i < count; i++) {
     Start: +Mock.Random.date('T'),
     End: +Mock.Random.date('T'),
     'ReserveUser|1': ['教师工会', '班级', '学生会', '舞蹈社'],
-    'ReserveHall|1': ['求实厅', '九州厅', '咖啡馆'],
+    'ReserveHall|1': ['夏新厅（300人）',	'会议室（40人）',	'舞蹈排练厅（20人）',	'咖啡厅（20人）', '九州厅（300人）',	'圆厅（300人）', 	'201报告厅（120人）', '202会议室（50人）',	'204会议室（30人）',	'216会议室（30人）'],
     'ApproveStatus|1': ['通过', '不通过', '待审核', '未上传图片'],
     'Activity|1': ['新年晚会', '成电讲坛', '迎新晚会', '艺术节'],
     auditComment: Mock.Random.paragraph(1),
@@ -46,14 +46,14 @@ module.exports = [
     url: '/vue-element-admin/article/list',
     type: 'get',
     response: config => {
-      const { ReserveDepartment, Activity, campus, ReserveHall, ApprovalStatus, DisplayPage = 1, DisplayRows = 20 } = config.query
+      const { ReserveDepartment, Activity, campus, ReserveHall, ApproveStatus, DisplayPage = 1, DisplayRows = 20 } = config.query
 
       let mockList = List.filter(item => {
         if (ReserveDepartment && item.ReserveDepartment !== ReserveDepartment) return false
         if (Activity && item.Activity !== Activity) return false
         if (campus && item.campus !== campus) return false
         if (ReserveHall && item.ReserveHall !== ReserveHall) return false
-        if (ApprovalStatus && item.ApprovalStatus !== ApprovalStatus) return false
+        if (ApproveStatus && item.ApproveStatus !== ApproveStatus) return false
         return true
       })
 
@@ -61,7 +61,7 @@ module.exports = [
       const pageList = mockList.filter((item, index) => index < DisplayRows * DisplayPage && index >= DisplayRows * (DisplayPage - 1))
 
       return {
-        code: 20000,
+        code: 200,
         data: {
           total: mockList.length,
           items: pageList
@@ -78,7 +78,7 @@ module.exports = [
       for (const article of List) {
         if (article.id === +id) {
           return {
-            code: 20000,
+            code: 200,
             data: article
           }
         }
@@ -91,7 +91,7 @@ module.exports = [
     type: 'get',
     response: _ => {
       return {
-        code: 20000,
+        code: 200,
         data: {
           pvData: [
             { key: 'PC', pv: 1024 },
@@ -109,7 +109,7 @@ module.exports = [
     type: 'post',
     response: _ => {
       return {
-        code: 20000,
+        code: 200,
         data: 'success'
       }
     }
@@ -120,7 +120,7 @@ module.exports = [
     type: 'post',
     response: _ => {
       return {
-        code: 20000,
+        code: 200,
         data: 'success'
       }
     }
