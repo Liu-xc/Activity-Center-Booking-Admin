@@ -62,6 +62,23 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/overall',
+    component: Layout,
+    redirect: '/overall/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/overall/index'),
+        name: 'BookOverall',
+        meta: {
+          title: '预约情况',
+          icon: 'el-icon-view',
+          affix: false
+        }
+      }
+    ]
+  },
+  {
     path: '/account',
     component: Layout,
     redirect: '/account/index',

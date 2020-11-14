@@ -8,14 +8,14 @@
         placeholder="申请部门"
         style="width: 300px;"
         class="filter-item"
-        @input="handleFilter"
+        @input="_handleFilter"
       />
       <el-input
         v-model="listQuery.Activity"
         placeholder="活动名称"
         style="width: 300px;"
         class="filter-item"
-        @input="handleFilter"
+        @input="_handleFilter"
       />
       <el-select
         v-model="listQuery.Campus"
@@ -23,7 +23,7 @@
         clearable
         style="width: 150px"
         class="filter-item"
-        @input="handleFilter"
+        @input="_handleFilter"
       >
         <el-option v-for="item in campuses || Campuses" :key="item" :label="item" :value="item" />
       </el-select>
@@ -33,7 +33,7 @@
         clearable
         class="filter-item"
         style="width: 200px"
-        @input="handleFilter"
+        @input="_handleFilter"
       >
         <el-option v-for="item in halls || Halls" :key="item" :label="item" :value="item" />
       </el-select>
@@ -43,7 +43,7 @@
         clearable
         class="filter-item"
         style="width: 130px"
-        @input="handleFilter"
+        @input="_handleFilter"
       >
         <el-option v-for="item in ApprovalStatus" :key="item" :label="item" :value="item" />
       </el-select>
@@ -53,7 +53,7 @@
         class="filter-item"
         type="primary"
         icon="el-icon-search"
-        @click="handleFilter"
+        @click="_handleFilter"
       >{{ $t('table.search') }}</el-button>
       <el-button
         v-waves
@@ -236,7 +236,8 @@ import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 // import { ErrorCodes } from '../../utils/errorCodes'
-import { Campuses, Halls, QSHalls, SHHalls, ApprovalStatus } from './modules/StaticData'
+import { Campuses, Halls, QSHalls, SHHalls, ApprovalStatus } from '../../utils/StaticData'
+import { handleCampusAndHalls, handleFilter } from '../../utils/formHandlers'
 
 export default {
   name: 'ComplexTable',
@@ -341,18 +342,9 @@ export default {
       this.dialogFormVisible = true
       this.imgsToCheck = val.imgs
     },
-    handleFilter() {
-      this._handleCampusAndHalls()
-      // 做一个防抖
-      if (this.searchTimer) {
-        clearTimeout(this.searchTimer)
-      }
-      this.searchTimer = setTimeout(() => {
-        this.listQuery.DisplayPage = 1
-        this.getList()
-        clearTimeout(this.searchTimer)
-        this.searchTimer = null
-      }, 1000)
+    _handleFilter() {
+      handleCampusAndHalls(this)
+      handleFilter(this, this.getList)
     },
     // 获取数据
     getList() {
@@ -396,27 +388,6 @@ export default {
       // 获取参数（ReserveHall，requestPeriod）
       // 携带参数发送请求获取冲突数组
       return Promise.resolve(this.list.slice(3, 6))
-    },
-    /* 解决校区和hall的关系 */
-    _handleCampusAndHalls() {
-      /* 判断校区和hall的关系 */
-      if (this.listQuery.Campus) {
-        /* 如果设置了校区 */
-        const index = this.Campuses.indexOf(this.listQuery.Campus)
-        this.halls = index === 0 ? this.QSHalls : this.SHHalls
-      } else if (this.listQuery.ReserveHall) {
-        /* 如果设置了厅 */
-        if (this.QSHalls.includes(this.listQuery.ReserveHall)) {
-          this.listQuery.Campus = this.Campuses[0]
-          this.campuses = [this.Campuses[0]]
-        } else if (this.SHHalls.includes(this.listQuery.ReserveHall)) {
-          this.listQuery.Campus = this.Campuses[1]
-          this.campuses = [this.Campuses[1]]
-        }
-      } else {
-        this.halls = this.Halls
-        this.campuses = this.Campuses
-      }
     }
   }
 }
