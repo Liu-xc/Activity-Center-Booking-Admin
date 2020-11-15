@@ -90,6 +90,19 @@ export const constantRoutes = [
         meta: { title: '账号管理', icon: 'el-icon-s-custom', affix: false }
       }
     ]
+  },
+  {
+    path: '/manage',
+    component: Layout,
+    redirect: '/manage/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/manageUsers/index'),
+        name: 'ManageUsers',
+        meta: { title: '用户管理', icon: 'el-icon-receiving' }
+      }
+    ]
   }
 ]
 

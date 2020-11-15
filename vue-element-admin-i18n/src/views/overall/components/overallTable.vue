@@ -8,6 +8,15 @@
     </div>
     <div class="table-body">
       <overall-table-column hall="求实厅" :approve-list="approveList" />
+      <overall-table-column hall="求实厅" :approve-list="approveList" />
+      <overall-table-column hall="求实厅" :approve-list="approveList" />
+      <overall-table-column hall="求实厅" :approve-list="approveList" />
+      <overall-table-column hall="求实厅" :approve-list="approveList" />
+      <overall-table-column hall="求实厅" :approve-list="approveList" />
+      <overall-table-column hall="求实厅" :approve-list="approveList" />
+      <overall-table-column hall="求实厅" :approve-list="approveList" />
+      <overall-table-column hall="求实厅" :approve-list="approveList" />
+      <overall-table-column hall="求实厅" :approve-list="approveList" />
     </div>
   </div>
 </template>
@@ -23,7 +32,10 @@ export default {
     return {
       approveList: [
         {
-          startTime: ''
+          startTime: '',
+          department: '学工部学工部学工部学工部学工部学工部学工部学工部',
+          period: [new Date(), new Date()],
+          tel: '12314'
         }
       ]
     }
@@ -36,9 +48,9 @@ export default {
   display: grid;
   grid-template-columns: 80px 1fr;
   width: 80%;
-  height: 700px;
+  height: 750px;
   margin: 0 auto;
-  background-color: pink;
+  overflow: scroll;
 }
 .time-line {
   display: grid;
