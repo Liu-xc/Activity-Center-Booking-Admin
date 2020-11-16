@@ -1,5 +1,13 @@
 import request from '@/utils/request'
 
+export function fetchUserList(query) {
+  return request({
+    url: '/vue-element-admin/user/user-list',
+    method: 'get',
+    params: query
+  })
+}
+
 export function login(data) {
   return request({
     url: '/vue-element-admin/user/login',
@@ -22,3 +30,4 @@ export function logout() {
     method: 'post'
   })
 }
+
