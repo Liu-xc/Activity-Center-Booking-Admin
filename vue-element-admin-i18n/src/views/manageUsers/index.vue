@@ -84,7 +84,7 @@
           <el-button type="primary" size="mini" @click="changeLevel(row)">修改等级</el-button>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="117" class-name="small-padding fixed-width">
+      <el-table-column label="删除" align="center" width="117" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button size="mini" type="danger" @click="deleteOne(row)">删除</el-button>
         </template>
@@ -120,15 +120,15 @@
             <el-radio label="超级管理员">超级管理员</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-button size="mini" type="primary" @click="onSubmitChange">提交</el-button>
+        <el-button size="mini" type="primary" class="subBtn" @click="onSubmitChange">提交</el-button>
       </el-form>
     </el-dialog>
     <el-dialog title="添加用户" :visible.sync="addUserDialogVisible" @close="onAddUserClose">
-      <el-form ref="form" label-width="80px" size="mini">
+      <el-form ref="addUserForm" :model="userToAdd" :rules="rules" label-width="80px" size="mini">
         <el-form-item label="用户工号" required>
           <el-input v-model="userToAdd.userID" />
         </el-form-item>
-        <el-form-item label="用户名称" required>
+        <el-form-item label="用户名称" required prop="userName">
           <el-input v-model="userToAdd.userName" />
         </el-form-item>
         <el-form-item label="用户所属" required>
@@ -141,7 +141,8 @@
             <el-radio label="超级管理员">超级管理员</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-button size="mini" type="primary" @click="onSubmitAdd">提交</el-button>
+        <el-button size="mini" class="subBtn" type="primary" @click="onSubmitAdd('addUserForm')">提交</el-button>
+        <el-button size="mini" type="primary" @click="resetForm('addUserForm')">重置</el-button>
       </el-form>
     </el-dialog>
   </div>
@@ -170,6 +171,18 @@ export default {
     }
   },
   data() {
+    var validatorUname = (rule, value, callback) => {
+      var reg = new RegExp("[`~!@#$^&*()=|{}':;',\\[\\].<>《》/?~！@#￥……&*（）——|{}【】‘；：”“'。，、？]")
+      if (value.length < 2) {
+        callback(new Error('用户名不能少于2个字符'))
+      } else if (value.length >= 20) {
+        callback(new Error('用户名不能超过20个字符'))
+      } else if (reg.test(value)) {
+        callback(new Error('用户名不能包含特殊字符'))
+      } else {
+        callback()
+      }
+    }
     return {
       auditListLen: 1, // 要审核的列表长度
       checkedList: [], // 选中的列表项
@@ -203,7 +216,10 @@ export default {
       searchTimer: null,
       Campuses, UserLevels, Halls, QSHalls, SHHalls,
       halls: this.Halls,
-      campuses: this.Campuses
+      campuses: this.Campuses,
+      rules: {
+        userName: [{ validator: validatorUname, trigger: 'blur' }]
+      }
     }
   },
   created() {
@@ -218,14 +234,44 @@ export default {
       this.addUserDialogVisible = true
     },
     deleteOne(row) {
-
+      this.$confirm(`此操作将删除用户 " ${row.userName} " , 是否继续?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
     },
     // 点击审核选中项时触发
     deleteGroup() {
       // 如果没有选中的项就什么也不做
-      if (this.checkedList.length) {
-        this.auditDialogVisible = true
+      if (!this.checkedList.length) {
+        return
       }
+      const userList = this.checkedList.map(v => v.userName).join()
+      this.$confirm(`此操作将删除：${userList}\n等 ${this.checkedList.length} 位用户, 是否继续?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
       // 有空的话加一个提示信息
     },
     // 表格的复选框选择时触发
@@ -234,19 +280,31 @@ export default {
     },
     onSubmitChange() {
       // 发布修改并且关闭弹窗
+      /* 要有消息提示 */
+      this.$message({
+        type: 'success',
+        message: '修改成功!'
+      })
       this.auditDialogVisible = false
     },
-    onSubmitAdd() {
+    onSubmitAdd(formName) {
       /* 进行表单验证 */
-      this.addUserDialogVisible = false
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          alert('submit!')
+          this.addUserDialogVisible = false
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+      /* 发起请求，请求成功后设置隐藏 */
+    },
+    resetForm(formName) {
+      this.$refs[formName].resetFields()
     },
     onAddUserClose() {
-      this.userToAdd = {
-        userID: '',
-        userName: '',
-        department: '',
-        userLevel: ''
-      }
+      this.$refs['addUserForm'].resetFields()
     },
     _handleFilter() {
       handleCampusAndHalls(this)
@@ -295,5 +353,20 @@ export default {
 }
 .detail-img {
   width: 100%;
+}
+.subBtn {
+  margin-left: 80px !important;
+}
+.el-table::before {
+  height: 0;
+}
+.el-table--border::after {
+  height: 0;
+}
+.el-table--border {
+  border-top: none;
+}
+.el-table__header .has-gutter {
+  border-top: 1px solid #dfe6ec !important;
 }
 </style>

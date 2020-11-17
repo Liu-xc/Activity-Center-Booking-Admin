@@ -55,6 +55,10 @@ export default {
 .time-line {
   display: grid;
   grid-template-rows: repeat(15, 1fr);
+  position: sticky;
+  left: 0;
+  background-color: white;
+  z-index: 10;
 }
 .table-body {
   height: 100%;
