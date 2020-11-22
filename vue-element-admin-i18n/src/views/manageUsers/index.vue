@@ -149,6 +149,7 @@
 </template>
 
 <script>
+// , getAdminList, deleteAdmin, setAdmin, changeAdminLevel
 import { fetchUserList } from '@/api/user'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -226,19 +227,70 @@ export default {
     this.getList()
   },
   methods: {
+
+    // 表格的复选框选择时触发
+    handleSelection(val) {
+      this.checkedList = val
+    },
+    /* 重置 */
+    resetForm(formName) {
+      this.$refs[formName].resetFields()
+    },
+    /* 同步限制筛选范围 */
+    _handleFilter() {
+      handleCampusAndHalls(this)
+      handleFilter(this, this.getList)
+    },
+    /* 关闭添加面板时，清除已经填写的内容 */
+    onAddUserClose() {
+      this.$refs['addUserForm'].resetFields()
+    },
+    /* 修改用户的等级 */
     changeLevel(row) {
       this.auditDialogVisible = true
       this.userToHandle = row
     },
+    /* 添加一个用户 */
     addUser() {
       this.addUserDialogVisible = true
     },
+
+    /* 以下为需要发起请求的方法 */
+
+    /* 提交修改 */
+    onSubmitChange() {
+      // 发布修改并且关闭弹窗
+      // changeAdminLevel().then()
+      /* 要有消息提示 */
+      this.$message({
+        type: 'success',
+        message: '修改成功!'
+      })
+      this.auditDialogVisible = false
+    },
+    /* 提交新建用户 */
+    onSubmitAdd(formName) {
+      /* 进行表单验证 */
+      // setAdmin().then()
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          alert('submit!')
+          this.addUserDialogVisible = false
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+      /* 发起请求，请求成功后设置隐藏 */
+    },
+    /* 删除一个用户 */
     deleteOne(row) {
       this.$confirm(`此操作将删除用户 " ${row.userName} " , 是否继续?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+        // deleteAdmin().then()
         this.$message({
           type: 'success',
           message: '删除成功!'
@@ -262,6 +314,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+        // promiseAll?
         this.$message({
           type: 'success',
           message: '删除成功!'
@@ -274,44 +327,9 @@ export default {
       })
       // 有空的话加一个提示信息
     },
-    // 表格的复选框选择时触发
-    handleSelection(val) {
-      this.checkedList = val
-    },
-    onSubmitChange() {
-      // 发布修改并且关闭弹窗
-      /* 要有消息提示 */
-      this.$message({
-        type: 'success',
-        message: '修改成功!'
-      })
-      this.auditDialogVisible = false
-    },
-    onSubmitAdd(formName) {
-      /* 进行表单验证 */
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          alert('submit!')
-          this.addUserDialogVisible = false
-        } else {
-          console.log('error submit!!')
-          return false
-        }
-      })
-      /* 发起请求，请求成功后设置隐藏 */
-    },
-    resetForm(formName) {
-      this.$refs[formName].resetFields()
-    },
-    onAddUserClose() {
-      this.$refs['addUserForm'].resetFields()
-    },
-    _handleFilter() {
-      handleCampusAndHalls(this)
-      handleFilter(this, this.getList)
-    },
     // 获取数据
     getList() {
+      // getAdminList().then()
       this.listLoading = true
       fetchUserList(this.listQuery).then(response => {
         this.list = response.data.items

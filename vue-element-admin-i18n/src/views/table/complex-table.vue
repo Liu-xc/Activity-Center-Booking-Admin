@@ -335,9 +335,6 @@ export default {
       this.itemToAudit = this.auditChecked ? this.checkedList[val - 1] : this.conflictList[val - 1]
       console.log(this.itemToAudit)
     },
-    onSubmitAudit() {
-
-    },
     checkDetail(val) {
       this.dialogFormVisible = true
       this.imgsToCheck = val.imgs
@@ -347,8 +344,10 @@ export default {
       handleFilter(this, this.getList)
     },
     // 获取数据
+    /* 在这里要调用filterApprove */
     getList() {
       this.listLoading = true
+      // filterApprove().then()
       fetchList(this.listQuery).then(response => {
         this.list = response.data.items
         this.total = response.data.total
@@ -358,6 +357,16 @@ export default {
           this.listLoading = false
         }, 1.5 * 1000)
       })
+    },
+    /* 发布修改 */
+    onSubmitAudit() {
+      /* 将当前编辑的项提交 */
+      // approve().then()
+    },
+    getConflictList(row) {
+      // 获取参数（ReserveHall，requestPeriod）
+      // 携带参数发送请求获取冲突数组
+      return Promise.resolve(this.list.slice(3, 6))
     },
     handleDownload() {
       this.downloadLoading = true
@@ -383,11 +392,6 @@ export default {
           return v[j]
         }
       }))
-    },
-    getConflictList(row) {
-      // 获取参数（ReserveHall，requestPeriod）
-      // 携带参数发送请求获取冲突数组
-      return Promise.resolve(this.list.slice(3, 6))
     }
   }
 }

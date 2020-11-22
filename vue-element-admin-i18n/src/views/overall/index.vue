@@ -58,6 +58,10 @@ export default {
     _handleFilter() {
       handleCampusAndHalls(this)
       handleFilter(this)
+    },
+    /* 获取时间表 */
+    getTimeTable() {
+      // filterTimeTable().then()
     }
   }
 }

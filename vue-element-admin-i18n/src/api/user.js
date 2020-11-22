@@ -16,6 +16,7 @@ export function login(data) {
   })
 }
 
+/* 获取当前用户信息 */
 export function getInfo(token) {
   return request({
     url: '/vue-element-admin/user/info',
@@ -31,3 +32,56 @@ export function logout() {
   })
 }
 
+/* 修改管理员等级 */
+export function changeAdminLevel(UserID, UserName, NewLevel) {
+  return request({
+    url: '',
+    method: 'post',
+    data: {
+      UserID,
+      UserName,
+      NewLevel
+    }
+  })
+}
+
+/* 设置为管理员 */
+export function setAdmin(UserID, UserName) {
+  return request({
+    url: '',
+    method: 'post',
+    data: {
+      UserID,
+      UserName
+    }
+  })
+}
+
+/* 删除管理员 */
+export function deleteAdmin(UserID, UserName) {
+  return request({
+    url: '',
+    method: 'post',
+    data: {
+      UserID,
+      UserName
+    }
+  })
+}
+
+/* 获取管理员名单 */
+export function getAdminList() {
+  return request({
+    url: '',
+    method: 'get'
+  })
+}
+
+/* 更新当前用户账户信息 */
+export function updateAccount(data) {
+  return request({
+    url: '',
+    method: 'post',
+    data
+  })
+}
