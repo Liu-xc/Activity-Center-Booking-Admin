@@ -4,48 +4,63 @@
       <el-button type="primary" class="group-audit filter-item" @click="auditGroup">审核选中项</el-button>
       <!-- $t是用与语言转换的 -->
       <el-input
-        v-model="listQuery.ReserveDepartment"
+        v-model="listQuery.reserveDepartment"
         placeholder="申请部门"
         style="width: 300px;"
         class="filter-item"
         @input="_handleFilter"
       />
       <el-input
-        v-model="listQuery.Activity"
+        v-model="listQuery.activity"
         placeholder="活动名称"
         style="width: 300px;"
         class="filter-item"
         @input="_handleFilter"
       />
       <el-select
-        v-model="listQuery.Campus"
+        v-model="listQuery.campus"
         placeholder="校区"
         clearable
         style="width: 150px"
         class="filter-item"
         @input="_handleFilter"
       >
-        <el-option v-for="item in campuses || Campuses" :key="item" :label="item" :value="item" />
+        <el-option
+          v-for="item in Object.keys(Campuses)"
+          :key="item"
+          :label="Campuses[item]"
+          :value="item"
+        />
       </el-select>
       <el-select
-        v-model="listQuery.ReserveHall"
+        v-model="listQuery.reserveHall"
         placeholder="场地"
         clearable
         class="filter-item"
         style="width: 200px"
         @input="_handleFilter"
       >
-        <el-option v-for="item in halls || Halls" :key="item" :label="item" :value="item" />
+        <el-option
+          v-for="item in Object.keys(Halls)"
+          :key="item"
+          :label="Halls[item]"
+          :value="item"
+        />
       </el-select>
       <el-select
-        v-model="listQuery.ApproveStatus"
+        v-model="listQuery.approveStatus"
         placeholder="审核状态"
         clearable
         class="filter-item"
         style="width: 130px"
         @input="_handleFilter"
       >
-        <el-option v-for="item in ApprovalStatus" :key="item" :label="item" :value="item" />
+        <el-option
+          v-for="item in Object.keys(ReviewStatus)"
+          :key="item"
+          :label="ReviewStatus[item]"
+          :value="item"
+        />
       </el-select>
 
       <el-button
@@ -75,44 +90,47 @@
       style="width: 100%;"
       @selection-change="handleSelection"
     >
+      <!-- 申请序号 -->
       <el-table-column :label="$t('table.id')" prop="id" align="center" width="80">
         <template slot-scope="{row}">
-          <span>{{ row.AppleID }}</span>
+          <span>{{ row.aid }}</span>
         </template>
       </el-table-column>
-      <el-table-column type="selection" label="勾选" width="80px" align="center">
-        <!-- <template slot-scope="{row}">
-          <el-checkbox label :data-row="row"></el-checkbox>
-        </template>-->
-      </el-table-column>
+      <el-table-column type="selection" label="勾选" width="80px" align="center" />
+      <!-- 提交时间 -->
       <el-table-column align="center" label="提交时间" width="200px">
         <template slot-scope="{row}">
-          <span>{{ row.SubmitTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <span>{{ (row.createTime || row.updateTime) | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
+      <!-- 申请部门 -->
       <el-table-column label="申请部门" width="220px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.ReserveUser }}</span>
+          <span>{{ Department[row.uid + ''] }}</span>
         </template>
       </el-table-column>
+      <!-- 使用时间段 -->
       <el-table-column label="使用时间" width="300px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.Start|parseTime('{m}-{d} {h}:{i}') }} —— {{ row.End|parseTime('{m}-{d} {h}:{i}') }}</span>
+          <span>{{ row.formalStart|parseTime('{m}-{d} {h}:{i}') }} —— {{ row.formalEnd|parseTime('{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
+      <!-- 预约场地 -->
       <el-table-column align="center" label="场地" width="160px">
         <template slot-scope="{row}">
-          <span>{{ row.ReserveHall }}</span>
+          <span>{{ Halls[row.reserveHall + ''] }}</span>
         </template>
       </el-table-column>
+      <!-- 活动名称 -->
       <el-table-column align="center" label="活动名称" width="250px">
         <template slot-scope="{row}">
-          <span>{{ row.Activity }}</span>
+          <span>{{ row.activity }}</span>
         </template>
       </el-table-column>
+      <!-- 审核状态 -->
       <el-table-column label="状态" align="center" width="160">
         <template slot-scope="{row}">
-          <span class="link-type">{{ row.ApproveStatus }}</span>
+          <span class="link-type">{{ ReviewStatus[row.reviewStatus + ''] }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="201" class-name="small-padding fixed-width">
@@ -126,8 +144,8 @@
       <pagination
         v-show="total>0"
         :total="total"
-        :page.sync="listQuery.DisplayPage"
-        :limit.sync="listQuery.DisplayRows"
+        :page.sync="listQuery.displayPage"
+        :limit.sync="listQuery.displayRows"
         :page-sizes="[10, 15, 20, 30, 40, 50]"
         class="pages"
         @pagination="getList"
@@ -135,21 +153,19 @@
     </div>
 
     <el-dialog title="详情" :visible.sync="dialogFormVisible">
-      <div v-if="imgsToCheck.length">
-        <template v-for="item of imgsToCheck">
-          <el-image
-            :key="item"
-            :preview-src-list="imgsToCheck"
-            class="detail-img"
-            fit="contain"
-            :src="item"
-            alt
-          >
-            <div slot="error" class="image-slot">
-              <i class="el-icon-picture-outline" />
-            </div>
-          </el-image>
-        </template>
+      <div v-if="imgToCheck">
+        <el-image
+          :key="item"
+          :preview-src="imgToCheck"
+          class="detail-img"
+          fit="contain"
+          :src="item"
+          alt
+        >
+          <div slot="error" class="image-slot">
+            <i class="el-icon-picture-outline" />
+          </div>
+        </el-image>
       </div>
       <div v-else>未上传图片</div>
     </el-dialog>
@@ -157,7 +173,7 @@
       <el-form ref="form" label-width="80px" size="mini">
         <el-form-item label="申请时间">
           <el-date-picker
-            v-model="itemToAudit.SubmitTime"
+            :value="itemToAudit.createTime || itemToAudit.updateTime"
             type="date"
             placeholder="选择日期"
             style="width: 100%;"
@@ -166,20 +182,20 @@
           />
         </el-form-item>
         <el-form-item label="申请部门">
-          <el-input v-model="itemToAudit.ReserveUser" disabled />
+          <el-input v-model="Department[itemToAudit.uid + '']" disabled />
         </el-form-item>
         <el-form-item label="活动名称">
-          <el-input v-model="itemToAudit.Activity" disabled />
+          <el-input v-model="itemToAudit.activity" disabled />
         </el-form-item>
         <el-form-item label="活动场地">
-          <el-select v-model="itemToAudit.ReserveHall" placeholder="活动场地" disabled>
-            <el-option :label="itemToAudit.ReserveHall" :value="itemToAudit.ReserveHall" />
+          <el-select v-model="itemToAudit.reserveHall" placeholder="活动场地" disabled>
+            <el-option :label="itemToAudit.reserveHall" :value="itemToAudit.reserveHall" />
           </el-select>
         </el-form-item>
         <el-form-item label="活动时间">
           <el-col :span="11">
             <el-date-picker
-              v-model="itemToAudit.Start"
+              v-model="itemToAudit.formalStart"
               type="date"
               placeholder="选择日期"
               style="width: 100%;"
@@ -190,7 +206,7 @@
           <el-col class="line" :span="2">-</el-col>
           <el-col :span="11">
             <el-date-picker
-              v-model="itemToAudit.End"
+              v-model="itemToAudit.formalEnd"
               type="date"
               placeholder="选择日期"
               style="width: 100%;"
@@ -200,15 +216,14 @@
           </el-col>
         </el-form-item>
         <el-form-item label="审核状态">
-          <el-radio-group v-model="itemToAudit.ApproveStatus">
-            <el-radio label="通过">通过</el-radio>
-            <el-radio label="不通过">不通过</el-radio>
-            <el-radio label="待审核">待审核</el-radio>
-            <el-radio label="未上传图片">未上传图片</el-radio>
+          <el-radio-group v-model="itemToAudit.reviewStatus">
+            <template v-for="item of Object.keys(ReviewStatus)">
+              <el-radio :key="ReviewStatus[item]" :label="item">{{ ReviewStatus[item] }}</el-radio>
+            </template>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="备注">
-          <el-input v-model="itemToAudit.auditComment" />
+          <el-input v-model="itemToAudit.remarks" />
         </el-form-item>
         <el-form-item label="查看详情">
           <el-button type="primary" size="mini" @click="checkDetail(itemToAudit)">详情</el-button>
@@ -231,13 +246,14 @@
 </template>
 
 <script>
-import { fetchList } from '@/api/article'
+// import { fetchList } from '@/api/article'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 // import { ErrorCodes } from '../../utils/errorCodes'
-import { Campuses, Halls, QSHalls, SHHalls, ApprovalStatus } from '../../utils/StaticData'
-import { handleCampusAndHalls, handleFilter } from '../../utils/formHandlers'
+import { Campuses, Halls, Department, Authority, ActivityType, ReviewStatus } from '../../utils/StaticData'
+import { handleFilter } from '../../utils/formHandlers'
+import { approve, filterApprove } from '../../api/approve'
 
 export default {
   name: 'ComplexTable',
@@ -264,30 +280,31 @@ export default {
       itemToAudit: {
         requestTime: '',
         requestPeriod: [undefined, undefined],
-        ReserveDepartment: '',
-        Activity: '',
-        ApproveStatus: '待审核',
-        ReserveHall: '',
-        imgs: []
+        reserveDepartment: '',
+        activity: '',
+        approveStatus: '待审核',
+        reserveHall: '',
+        imgs: [],
+        remarks: ''
       },
-      imgsToCheck: [],
+      imgToCheck: null,
       tableKey: 0,
       list: null, // 数据
       total: 0,
       listLoading: true,
       listQuery: { // 请求参数
-        DisplayPage: 1,
-        DisplayRows: 15,
-        ReserveDepartment: '',
-        Activity: '',
-        Campus: '',
-        ReserveHall: '',
-        ApproveStatus: ''
+        displayPage: 1,
+        displayRows: 15,
+        reserveDepartment: '',
+        activity: '',
+        campus: '',
+        reserveHall: '',
+        approveStatus: ''
       },
       dialogFormVisible: false,
       downloadLoading: false,
       searchTimer: null,
-      Campuses, ApprovalStatus, Halls, QSHalls, SHHalls,
+      Campuses, Halls, Department, Authority, ActivityType, ReviewStatus,
       halls: this.Halls,
       campuses: this.Campuses
     }
@@ -300,18 +317,18 @@ export default {
       // 点击审核时获取对应的数据项，应该现在数据库中查找是否有与之冲突的项
       this.auditChecked = false
       this.auditDialogVisible = true
-      if (row.conflict.isConflict) {
-        // 冲突了
-        this.getConflictList().then(list => {
-          this.auditListLen = list.length
-          this.conflictList = list
-          this.itemToAudit = list[0]
-        })
-      } else {
-        this.auditListLen = 1
-        this.conflictList = []
-        this.itemToAudit = row
-      }
+      // if (row.conflict.isConflict) {
+      //   // 冲突了
+      //   this.getConflictList().then(list => {
+      //     this.auditListLen = list.length
+      //     this.conflictList = list
+      //     this.itemToAudit = list[0]
+      //   })
+      // } else {
+      this.auditListLen = 1
+      this.conflictList = []
+      this.itemToAudit = row
+      // }
       // 然后再展示出来进行审核
       // 需要一个loading效果
     },
@@ -333,46 +350,24 @@ export default {
     // 当审核界面的分页器页数切换时触发
     changeAuditIndex(val) {
       this.itemToAudit = this.auditChecked ? this.checkedList[val - 1] : this.conflictList[val - 1]
-      console.log(this.itemToAudit)
     },
     checkDetail(val) {
       this.dialogFormVisible = true
-      this.imgsToCheck = val.imgs
+      this.imgToCheck = val.imageUrl
     },
     _handleFilter() {
-      handleCampusAndHalls(this)
       handleFilter(this, this.getList)
     },
-    // 获取数据
-    /* 在这里要调用filterApprove */
-    getList() {
-      this.listLoading = true
-      // filterApprove().then()
-      fetchList(this.listQuery).then(response => {
-        this.list = response.data.items
-        this.total = response.data.total
-
-        // Just to simulate the time of the request
-        setTimeout(() => {
-          this.listLoading = false
-        }, 1.5 * 1000)
-      })
-    },
-    /* 发布修改 */
-    onSubmitAudit() {
-      /* 将当前编辑的项提交 */
-      // approve().then()
-    },
-    getConflictList(row) {
-      // 获取参数（ReserveHall，requestPeriod）
-      // 携带参数发送请求获取冲突数组
-      return Promise.resolve(this.list.slice(3, 6))
-    },
+    // getConflictList (row) {
+    //   // 获取参数（ReserveHall，requestPeriod）
+    //   // 携带参数发送请求获取冲突数组
+    //   return Promise.resolve(this.list.slice(3, 6))
+    // },
     handleDownload() {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
         const tHeader = ['提交时间', '申请部门', '使用时间', '场地', '审核状态']
-        const filterVal = ['requestTime', 'ReserveDepartment', 'requestPeriod', 'ReserveHall', 'ApprovalStatus']
+        const filterVal = ['requestTime', 'reserveDepartment', 'requestPeriod', 'reserveHall', 'ApprovalStatus']
         const data = this.formatJson(filterVal)
         excel.export_json_to_excel({
           header: tHeader,
@@ -392,6 +387,47 @@ export default {
           return v[j]
         }
       }))
+    },
+
+    /* 下面为需要发起请求的方法 */
+
+    // 获取数据
+    /* 在这里要调用filterApprove */
+    getList() {
+      this.listLoading = true
+
+      filterApprove(this.listQuery).then(response => {
+        this.list = response.data.list
+        this.total = response.data.total
+
+        // Just to simulate the time of the request
+        this.listLoading = false
+      })
+    },
+    /* 发布修改 */
+    onSubmitAudit() {
+      /* 将当前编辑的项提交 */
+      const params = {
+        aid: this.itemToAudit.aid,
+        reviewStatus: this.itemToAudit.reviewStatus,
+        reviewResponse: this.itemToAudit.remarks
+      }
+      approve(params).then(res => {
+        /* 加一个加载效果或者提示 */
+        this.$message({
+          showClose: true,
+          message: '修改成功',
+          type: 'success'
+        })
+      },
+      () => {
+        this.$message({
+          showClose: true,
+          message: '修改失败',
+          type: 'danger'
+        })
+      }
+      )
     }
   }
 }

@@ -8,14 +8,14 @@ const count = 100
 
 for (let i = 0; i < count; i++) {
   List.push(Mock.mock({
-    AppleID: '@increment',
-    SubmitTime: +Mock.Random.date('T'),
-    Start: +Mock.Random.date('T'),
-    End: +Mock.Random.date('T'),
-    'ReserveUser|1': ['教师工会', '班级', '学生会', '舞蹈社'],
-    'ReserveHall|1': ['夏新厅（300人）',	'会议室（40人）',	'舞蹈排练厅（20人）',	'咖啡厅（20人）', '九州厅（300人）',	'圆厅（300人）', 	'201报告厅（120人）', '202会议室（50人）',	'204会议室（30人）',	'216会议室（30人）'],
-    'ApproveStatus|1': ['通过', '不通过', '待审核', '未上传图片'],
-    'Activity|1': ['新年晚会', '成电讲坛', '迎新晚会', '艺术节'],
+    appleID: '@increment',
+    submitTime: +Mock.Random.date('T'),
+    start: +Mock.Random.date('T'),
+    end: +Mock.Random.date('T'),
+    'reserveUser|1': ['教师工会', '班级', '学生会', '舞蹈社'],
+    'reserveHall|1': ['夏新厅（300人）',	'会议室（40人）',	'舞蹈排练厅（20人）',	'咖啡厅（20人）', '九州厅（300人）',	'圆厅（300人）', 	'201报告厅（120人）', '202会议室（50人）',	'204会议室（30人）',	'216会议室（30人）'],
+    'approveStatus|1': ['通过', '不通过', '待审核', '未上传图片'],
+    'activity|1': ['新年晚会', '成电讲坛', '迎新晚会', '艺术节'],
     auditComment: Mock.Random.paragraph(1),
     imgs: [Mock.Random.image(), Mock.Random.image(), Mock.Random.image()],
     conflict: {	// 冲突标志

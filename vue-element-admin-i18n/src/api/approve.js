@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function approve(params) {
   return request({
-    url: '',
+    url: '/Approval/Approve',
     method: 'post',
     data: params
   })
@@ -10,7 +10,7 @@ export function approve(params) {
 
 export function filterApprove(params) {
   return request({
-    url: '',
+    url: '/Approval/ApproveFilter',
     method: 'get',
     params
   })

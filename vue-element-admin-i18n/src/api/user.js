@@ -33,15 +33,11 @@ export function logout() {
 }
 
 /* 修改管理员等级 */
-export function changeAdminLevel(UserID, UserName, NewLevel) {
+export function changeAdminLevel(data) {
   return request({
-    url: '',
+    url: '/Admin/UpdateUser',
     method: 'post',
-    data: {
-      UserID,
-      UserName,
-      NewLevel
-    }
+    data
   })
 }
 
@@ -70,10 +66,11 @@ export function deleteAdmin(UserID, UserName) {
 }
 
 /* 获取管理员名单 */
-export function getAdminList() {
+export function getAdminList(params) {
   return request({
-    url: '',
-    method: 'get'
+    url: '/Admin/UserList',
+    method: 'get',
+    params
   })
 }
 

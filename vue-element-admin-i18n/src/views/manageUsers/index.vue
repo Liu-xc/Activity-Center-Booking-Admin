@@ -5,14 +5,14 @@
       <el-button type="primary" class="group-audit filter-item" @click="deleteGroup">删除</el-button>
       <!-- $t是用与语言转换的 -->
       <el-input
-        v-model="listQuery.userID"
+        v-model="listQuery.workId"
         placeholder="用户工号"
         style="width: 230px;"
         class="filter-item"
         @input="_handleFilter"
       />
       <el-input
-        v-model="listQuery.userName"
+        v-model="listQuery.name"
         placeholder="用户名称"
         style="width: 230px;"
         class="filter-item"
@@ -26,14 +26,19 @@
         @input="_handleFilter"
       />
       <el-select
-        v-model="listQuery.userLevel"
+        v-model="listQuery.authority"
         placeholder="用户等级"
         clearable
         class="filter-item"
         style="width: 200px"
         @input="_handleFilter"
       >
-        <el-option v-for="item in UserLevels" :key="item" :label="item" :value="item" />
+        <el-option
+          v-for="item in Object.keys(Authority)"
+          :key="item"
+          :label="Authority[item]"
+          :value="item"
+        />
       </el-select>
       <el-button
         v-waves
@@ -61,22 +66,22 @@
       </el-table-column>
       <el-table-column align="center" label="用户工号" width="200px">
         <template slot-scope="{row}">
-          <span>{{ row.userID }}</span>
+          <span>{{ row.workId }}</span>
         </template>
       </el-table-column>
       <el-table-column label="用户姓名" width="220px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.userName }}</span>
+          <span>{{ row.name }}</span>
         </template>
       </el-table-column>
       <el-table-column label="用户所属" width="300px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.department }}</span>
+          <span>{{ Department[row.department + ''] }}</span>
         </template>
       </el-table-column>
       <el-table-column label="用户级别" align="center" width="160">
         <template slot-scope="{row}">
-          <span class="link-type">{{ row.userLevel }}</span>
+          <span class="link-type">{{ Authority[row.authority + ''] }}</span>
         </template>
       </el-table-column>
       <el-table-column label="修改级别" align="center" width="160">
@@ -105,19 +110,19 @@
     <el-dialog title="修改等级" :visible.sync="auditDialogVisible">
       <el-form ref="form" label-width="80px" size="mini">
         <el-form-item label="用户工号">
-          <el-input v-model="userToHandle.userID" disabled />
+          <el-input v-model="userToHandle.workId" disabled />
         </el-form-item>
         <el-form-item label="用户名称">
-          <el-input v-model="userToHandle.userName" disabled />
+          <el-input v-model="userToHandle.name" disabled />
         </el-form-item>
         <el-form-item label="用户所属">
-          <el-input v-model="userToHandle.department" disabled />
+          <el-input :value="Department[userToHandle.department + '']" disabled />
         </el-form-item>
         <el-form-item label="用户等级">
-          <el-radio-group v-model="userToHandle.userLevel">
-            <el-radio label="普通用户">普通用户</el-radio>
-            <el-radio label="管理员">管理员</el-radio>
-            <el-radio label="超级管理员">超级管理员</el-radio>
+          <el-radio-group v-model="userToHandle.authority">
+            <template v-for="item in Object.keys(Authority)">
+              <el-radio :key="item" :label="item">{{ Authority[item + ''] }}</el-radio>
+            </template>
           </el-radio-group>
         </el-form-item>
         <el-button size="mini" type="primary" class="subBtn" @click="onSubmitChange">提交</el-button>
@@ -126,19 +131,19 @@
     <el-dialog title="添加用户" :visible.sync="addUserDialogVisible" @close="onAddUserClose">
       <el-form ref="addUserForm" :model="userToAdd" :rules="rules" label-width="80px" size="mini">
         <el-form-item label="用户工号" required>
-          <el-input v-model="userToAdd.userID" />
+          <el-input v-model="userToAdd.workId" />
         </el-form-item>
-        <el-form-item label="用户名称" required prop="userName">
-          <el-input v-model="userToAdd.userName" />
+        <el-form-item label="用户名称" required prop="name">
+          <el-input v-model="userToAdd.name" />
         </el-form-item>
         <el-form-item label="用户所属" required>
-          <el-input v-model="userToAdd.department" />
+          <el-input :value="Department[userToAdd.department + '']" />
         </el-form-item>
         <el-form-item label="用户等级" required>
-          <el-radio-group v-model="userToAdd.userLevel">
-            <el-radio label="普通用户">普通用户</el-radio>
-            <el-radio label="管理员">管理员</el-radio>
-            <el-radio label="超级管理员">超级管理员</el-radio>
+          <el-radio-group v-model="userToAdd.authority">
+            <template v-for="item in Object.keys(Authority)">
+              <el-radio :key="item" :label="item">{{ Authority[item + ''] }}</el-radio>
+            </template>
           </el-radio-group>
         </el-form-item>
         <el-button size="mini" class="subBtn" type="primary" @click="onSubmitAdd('addUserForm')">提交</el-button>
@@ -150,12 +155,13 @@
 
 <script>
 // , getAdminList, deleteAdmin, setAdmin, changeAdminLevel
-import { fetchUserList } from '@/api/user'
+// import { fetchUserList } from '@/api/user'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 // import { ErrorCodes } from '../../utils/errorCodes'
-import { Campuses, UserLevels, Halls, QSHalls, SHHalls } from '../../utils/StaticData'
-import { handleCampusAndHalls, handleFilter } from '../../utils/formHandlers'
+import { Department, Authority } from '../../utils/StaticData'
+import { handleFilter } from '../../utils/formHandlers'
+import { changeAdminLevel, getAdminList } from '../../api/user'
 
 export default {
   name: 'ComplexTable',
@@ -191,35 +197,33 @@ export default {
       addUserDialogVisible: false,
       checkAll: false,
       userToHandle: {
-        userID: '',
-        userName: '',
+        workId: '',
+        name: '',
         department: '',
-        userLevel: ''
+        authority: ''
       },
       userToAdd: {
-        userID: '',
-        userName: '',
+        workId: '',
+        name: '',
         department: '',
-        userLevel: ''
+        authority: ''
       },
       tableKey: 0,
       list: null, // 数据
       total: 0,
       listLoading: true,
       listQuery: { // 请求参数
-        userID: '',
-        userName: '',
+        workId: '',
+        name: '',
         department: '',
-        userLevel: '',
+        authority: '',
         DisplayPage: 1,
         DisplayRows: 10
       },
       searchTimer: null,
-      Campuses, UserLevels, Halls, QSHalls, SHHalls,
-      halls: this.Halls,
-      campuses: this.Campuses,
+      Department, Authority,
       rules: {
-        userName: [{ validator: validatorUname, trigger: 'blur' }]
+        name: [{ validator: validatorUname, trigger: 'blur' }]
       }
     }
   },
@@ -238,7 +242,6 @@ export default {
     },
     /* 同步限制筛选范围 */
     _handleFilter() {
-      handleCampusAndHalls(this)
       handleFilter(this, this.getList)
     },
     /* 关闭添加面板时，清除已经填写的内容 */
@@ -260,13 +263,21 @@ export default {
     /* 提交修改 */
     onSubmitChange() {
       // 发布修改并且关闭弹窗
-      // changeAdminLevel().then()
-      /* 要有消息提示 */
-      this.$message({
-        type: 'success',
-        message: '修改成功!'
+      const data = {
+        uid: this.userToHandle.uid,
+        authority: this.userToHandle.authority
+      }
+      changeAdminLevel(data).then(res => {
+        /* 这里应该判断状态码 */
+        this.$message({
+          type: 'success',
+          message: '修改成功!'
+        })
+        this.auditDialogVisible = false
+      }).catch(() => {
+
       })
-      this.auditDialogVisible = false
+      /* 要有消息提示 */
     },
     /* 提交新建用户 */
     onSubmitAdd(formName) {
@@ -285,7 +296,7 @@ export default {
     },
     /* 删除一个用户 */
     deleteOne(row) {
-      this.$confirm(`此操作将删除用户 " ${row.userName} " , 是否继续?`, '提示', {
+      this.$confirm(`此操作将删除用户 " ${row.name} " , 是否继续?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -308,7 +319,7 @@ export default {
       if (!this.checkedList.length) {
         return
       }
-      const userList = this.checkedList.map(v => v.userName).join()
+      const userList = this.checkedList.map(v => v.name).join()
       this.$confirm(`此操作将删除：${userList}\n等 ${this.checkedList.length} 位用户, 是否继续?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -331,14 +342,18 @@ export default {
     getList() {
       // getAdminList().then()
       this.listLoading = true
-      fetchUserList(this.listQuery).then(response => {
-        this.list = response.data.items
+      const params = {
+        displayPage: this.listQuery.displayPage,
+        displayRows: this.listQuery.displayRows
+      }
+      getAdminList(params).then(response => {
+        this.list = response.data.list
         this.total = response.data.total
 
         //   // Just to simulate the time of the request
-        setTimeout(() => {
-          this.listLoading = false
-        }, 1.5 * 1000)
+        this.listLoading = false
+      }).catch(() => {
+
       })
     }
   }
