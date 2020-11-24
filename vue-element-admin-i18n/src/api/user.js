@@ -10,7 +10,7 @@ export function fetchUserList(query) {
 
 export function login(data) {
   return request({
-    url: '/vue-element-admin/user/login',
+    url: '/Login',
     method: 'post',
     data
   })

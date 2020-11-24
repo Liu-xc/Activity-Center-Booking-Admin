@@ -33,11 +33,11 @@ import Layout from '@/layout'
  * all roles can be accessed
  */
 export const constantRoutes = [
-  {
-    path: '/login',
-    component: () => import('@/views/login/index'),
-    hidden: true
-  },
+  // {
+  //   path: '/login',
+  //   component: () => import('@/views/login/index'),
+  //   hidden: true
+  // },
   {
     path: '/404',
     component: () => import('@/views/error-page/404'),
@@ -61,23 +61,23 @@ export const constantRoutes = [
       }
     ]
   },
-  {
-    path: '/overall',
-    component: Layout,
-    redirect: '/overall/index',
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/overall/index'),
-        name: 'BookOverall',
-        meta: {
-          title: '预约情况',
-          icon: 'el-icon-view',
-          affix: false
-        }
-      }
-    ]
-  },
+  // {
+  //   path: '/overall',
+  //   component: Layout,
+  //   redirect: '/overall/index',
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/overall/index'),
+  //       name: 'BookOverall',
+  //       meta: {
+  //         title: '预约情况',
+  //         icon: 'el-icon-view',
+  //         affix: false
+  //       }
+  //     }
+  //   ]
+  // },
   {
     path: '/manage',
     component: Layout,

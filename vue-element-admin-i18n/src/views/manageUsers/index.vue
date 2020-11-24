@@ -161,7 +161,8 @@ import Pagination from '@/components/Pagination' // secondary package based on e
 // import { ErrorCodes } from '../../utils/errorCodes'
 import { Department, Authority } from '../../utils/StaticData'
 import { handleFilter } from '../../utils/formHandlers'
-import { changeAdminLevel, getAdminList } from '../../api/user'
+// import { changeAdminLevel, getAdminList } from '../../api/user'
+import { changeAdminLevel } from '../../api/user'
 
 export default {
   name: 'ComplexTable',
@@ -342,19 +343,84 @@ export default {
     getList() {
       // getAdminList().then()
       this.listLoading = true
-      const params = {
-        displayPage: this.listQuery.displayPage,
-        displayRows: this.listQuery.displayRows
+      // const params = {
+      //   displayPage: this.listQuery.displayPage,
+      //   displayRows: this.listQuery.displayRows
+      // }
+      const response = {
+        'data': {
+          'pageNum': 1,
+          'pageSize': 5,
+          'size': 5,
+          'startRow': 1,
+          'endRow': 5,
+          'total': 9,
+          'pages': 2,
+          'list': [
+            {
+              'uid': 1,
+              'name': '超级管理员',
+              'workId': '1',
+              'department': 0,
+              'authority': 0
+            },
+            {
+              'uid': 9,
+              'name': 'a测试账号',
+              'workId': '7',
+              'department': 1,
+              'authority': 0
+            },
+            {
+              'uid': 2,
+              'name': '普通管理员',
+              'workId': '2019',
+              'department': 0,
+              'authority': 1
+            },
+            {
+              'uid': 4,
+              'name': '测试用户',
+              'workId': '4',
+              'department': 0,
+              'authority': 1
+            },
+            {
+              'uid': 3,
+              'name': '普通用户',
+              'workId': '11',
+              'department': 1,
+              'authority': 2
+            }
+          ],
+          'prePage': 0,
+          'nextPage': 2,
+          'isFirstPage': true,
+          'isLastPage': false,
+          'hasPreviousPage': false,
+          'hasNextPage': true,
+          'navigatePages': 8,
+          'navigatepageNums': [
+            1,
+            2
+          ],
+          'navigateFirstPage': 1,
+          'navigateLastPage': 2,
+          'firstPage': 1,
+          'lastPage': 2
+        },
+        'code': 200,
+        'msg': 'SUCCESS'
       }
-      getAdminList(params).then(response => {
-        this.list = response.data.list
-        this.total = response.data.total
+      // getAdminList(params).then(response => {
+      this.list = response.data.list
+      this.total = response.data.total
 
-        //   // Just to simulate the time of the request
-        this.listLoading = false
-      }).catch(() => {
+      //   // Just to simulate the time of the request
+      this.listLoading = false
+      // }).catch(() => {
 
-      })
+      // })
     }
   }
 }
