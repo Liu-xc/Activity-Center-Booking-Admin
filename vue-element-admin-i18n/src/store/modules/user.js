@@ -4,7 +4,7 @@ import router, { resetRouter } from '@/router'
 
 const state = {
   token: getToken(),
-  info: {},
+  userinfo: {},
   roles: []
 }
 
@@ -32,7 +32,7 @@ const actions = {
         commit('SET_USERINFO', data)
         // commit('SET_TOKEN', data.token)
         // setToken(data.token)
-        console.log(response)
+        // console.log(data)
         resolve()
       }).catch(error => {
         reject(error)

@@ -48,7 +48,7 @@
         />
       </el-select>
       <el-select
-        v-model="listQuery.approveStatus"
+        v-model="listQuery.reviewStatus"
         placeholder="审核状态"
         clearable
         class="filter-item"
@@ -144,8 +144,8 @@
       <pagination
         v-show="total>0"
         :total="total"
-        :page.sync="listQuery.displayPage"
-        :limit.sync="listQuery.displayRows"
+        :page.sync="listQuery.DisplayPage"
+        :limit.sync="listQuery.DisplayRows"
         :page-sizes="[10, 15, 20, 30, 40, 50]"
         class="pages"
         @pagination="getList"
@@ -253,8 +253,8 @@ import Pagination from '@/components/Pagination' // secondary package based on e
 // import { ErrorCodes } from '../../utils/errorCodes'
 import { Campuses, Halls, Department, Authority, ActivityType, ReviewStatus } from '../../utils/StaticData'
 import { handleFilter } from '../../utils/formHandlers'
-import { approve } from '../../api/approve'
-// import { approve, filterApprove } from '../../api/approve'
+// import { approve } from '../../api/approve'
+import { approve, filterApprove } from '../../api/approve'
 
 export default {
   name: 'ComplexTable',
@@ -283,7 +283,7 @@ export default {
         requestPeriod: [undefined, undefined],
         reserveDepartment: '',
         activity: '',
-        approveStatus: '待审核',
+        reviewStatus: '待审核',
         reserveHall: '',
         imgs: [],
         remarks: ''
@@ -294,13 +294,13 @@ export default {
       total: 0,
       listLoading: true,
       listQuery: { // 请求参数
-        displayPage: 1,
-        displayRows: 15,
+        DisplayPage: 1,
+        DisplayRows: 15,
         reserveDepartment: '',
         activity: '',
         campus: '',
         reserveHall: '',
-        approveStatus: ''
+        reviewStatus: ''
       },
       dialogFormVisible: false,
       downloadLoading: false,
@@ -396,134 +396,14 @@ export default {
     /* 在这里要调用filterApprove */
     getList() {
       this.listLoading = true
-      const response = {
-        'data': {
-          'pageNum': 1,
-          'pageSize': 3,
-          'size': 3,
-          'startRow': 1,
-          'endRow': 3,
-          'total': 18,
-          'pages': 6,
-          'list': [
-            {
-              'aid': 1,
-              'uid': 4,
-              'createTime': '2020-11-12 09:17:55',
-              'updateTime': '2020-11-19 21:44:34',
-              'campus': 0,
-              'reserveHall': 1,
-              'activity': '测试活动',
-              'activityType': 1,
-              'arrangeDate': null,
-              'arrangeStart': null,
-              'arrangeEnd': null,
-              'arrangeSound': false,
-              'rehearsalDate': null,
-              'rehearsalStart': null,
-              'rehearsalEnd': null,
-              'rehearsalSound': false,
-              'formalDate': null,
-              'formalStart': null,
-              'formalEnd': null,
-              'remarks': null,
-              'activityHolder': '测试负责人',
-              'activityDepartment': 0,
-              'applicant': '测试申请人',
-              'contact': '1234567890',
-              'reviewStatus': 2,
-              'reviewResponse': 'abc',
-              'imageUrl': null
-            },
-            {
-              'aid': 3,
-              'uid': 4,
-              'createTime': '2020-11-12 09:44:26',
-              'updateTime': '2020-11-18 12:10:33',
-              'campus': 0,
-              'reserveHall': 0,
-              'activity': '测试',
-              'activityType': 0,
-              'arrangeDate': '2020-11-12 00:00:00',
-              'arrangeStart': null,
-              'arrangeEnd': null,
-              'arrangeSound': false,
-              'rehearsalDate': null,
-              'rehearsalStart': null,
-              'rehearsalEnd': null,
-              'rehearsalSound': false,
-              'formalDate': '2020-12-01 00:00:00',
-              'formalStart': '2020-11-12 09:44:26',
-              'formalEnd': '2020-11-12 09:44:26',
-              'remarks': '测试',
-              'activityHolder': '测试',
-              'activityDepartment': 0,
-              'applicant': '测试',
-              'contact': '12324',
-              'reviewStatus': 0,
-              'reviewResponse': null,
-              'imageUrl': null
-            },
-            {
-              'aid': 4,
-              'uid': 0,
-              'createTime': null,
-              'updateTime': '2020-11-19 04:35:28',
-              'campus': 0,
-              'reserveHall': 1,
-              'activity': 'abc',
-              'activityType': 0,
-              'arrangeDate': '2020-11-12 00:00:00',
-              'arrangeStart': null,
-              'arrangeEnd': null,
-              'arrangeSound': false,
-              'rehearsalDate': null,
-              'rehearsalStart': null,
-              'rehearsalEnd': null,
-              'rehearsalSound': false,
-              'formalDate': null,
-              'formalStart': null,
-              'formalEnd': null,
-              'remarks': null,
-              'activityHolder': null,
-              'activityDepartment': 0,
-              'applicant': null,
-              'contact': null,
-              'reviewStatus': 0,
-              'reviewResponse': null,
-              'imageUrl': null
-            }
-          ],
-          'prePage': 0,
-          'nextPage': 2,
-          'isFirstPage': true,
-          'isLastPage': false,
-          'hasPreviousPage': false,
-          'hasNextPage': true,
-          'navigatePages': 8,
-          'navigatepageNums': [
-            1,
-            2,
-            3,
-            4,
-            5,
-            6
-          ],
-          'navigateFirstPage': 1,
-          'navigateLastPage': 6,
-          'firstPage': 1,
-          'lastPage': 6
-        },
-        'code': 200,
-        'msg': 'SUCCESS'
-      }
-      // filterApprove(this.listQuery).then(response => {
-      this.list = response.data.list
-      this.total = response.data.total
+      console.log(this.$store.getters)
+      filterApprove(this.listQuery, this.$store.getters.userinfo).then(response => {
+        this.list = response.data.list
+        this.total = response.data.total
 
-      // Just to simulate the time of the request
-      this.listLoading = false
-      // })
+        // Just to simulate the time of the request
+        this.listLoading = false
+      })
     },
     /* 发布修改 */
     onSubmitAudit() {

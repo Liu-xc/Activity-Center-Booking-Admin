@@ -48,6 +48,7 @@ service.interceptors.response.use(
 
     // 在响应拦截中做错误提醒
     if (res.code + '' !== '200') {
+      console.log(res)
       Message({
         message: ErrorCodes && ErrorCodes[res.code + ''] || '未知异常',
         type: 'error',

@@ -99,8 +99,8 @@
       <pagination
         v-show="total>0"
         :total="total"
-        :page.sync="listQuery.DisplayPage"
-        :limit.sync="listQuery.DisplayRows"
+        :page.sync="listQuery.displayPage"
+        :limit.sync="listQuery.displayRows"
         :page-sizes="[10, 15, 20, 30, 40, 50]"
         class="pages"
         @pagination="getList"
@@ -161,8 +161,8 @@ import Pagination from '@/components/Pagination' // secondary package based on e
 // import { ErrorCodes } from '../../utils/errorCodes'
 import { Department, Authority } from '../../utils/StaticData'
 import { handleFilter } from '../../utils/formHandlers'
-// import { changeAdminLevel, getAdminList } from '../../api/user'
-import { changeAdminLevel } from '../../api/user'
+import { changeAdminLevel, getAdminList } from '../../api/user'
+// import { changeAdminLevel } from '../../api/user'
 
 export default {
   name: 'ComplexTable',
@@ -218,8 +218,8 @@ export default {
         name: '',
         department: '',
         authority: '',
-        DisplayPage: 1,
-        DisplayRows: 10
+        displayPage: 0,
+        displayRows: 5
       },
       searchTimer: null,
       Department, Authority,
@@ -343,84 +343,20 @@ export default {
     getList() {
       // getAdminList().then()
       this.listLoading = true
-      // const params = {
-      //   displayPage: this.listQuery.displayPage,
-      //   displayRows: this.listQuery.displayRows
-      // }
-      const response = {
-        'data': {
-          'pageNum': 1,
-          'pageSize': 5,
-          'size': 5,
-          'startRow': 1,
-          'endRow': 5,
-          'total': 9,
-          'pages': 2,
-          'list': [
-            {
-              'uid': 1,
-              'name': '超级管理员',
-              'workId': '1',
-              'department': 0,
-              'authority': 0
-            },
-            {
-              'uid': 9,
-              'name': 'a测试账号',
-              'workId': '7',
-              'department': 1,
-              'authority': 0
-            },
-            {
-              'uid': 2,
-              'name': '普通管理员',
-              'workId': '2019',
-              'department': 0,
-              'authority': 1
-            },
-            {
-              'uid': 4,
-              'name': '测试用户',
-              'workId': '4',
-              'department': 0,
-              'authority': 1
-            },
-            {
-              'uid': 3,
-              'name': '普通用户',
-              'workId': '11',
-              'department': 1,
-              'authority': 2
-            }
-          ],
-          'prePage': 0,
-          'nextPage': 2,
-          'isFirstPage': true,
-          'isLastPage': false,
-          'hasPreviousPage': false,
-          'hasNextPage': true,
-          'navigatePages': 8,
-          'navigatepageNums': [
-            1,
-            2
-          ],
-          'navigateFirstPage': 1,
-          'navigateLastPage': 2,
-          'firstPage': 1,
-          'lastPage': 2
-        },
-        'code': 200,
-        'msg': 'SUCCESS'
+      const params = {
+        displayPage: this.listQuery.displayPage,
+        displayRows: this.listQuery.displayRows
       }
-      // getAdminList(params).then(response => {
-      this.list = response.data.list
-      this.total = response.data.total
+      getAdminList(params, this.$store.getters.userinfo).then(response => {
+        console.log(response)
+        this.list = response.data.list
+        this.total = response.data.total
 
-      //   // Just to simulate the time of the request
-      this.listLoading = false
-      // }).catch(() => {
-
-      // })
+        //   // Just to simulate the time of the request
+        this.listLoading = false
+      }).catch((reason) => {
+        console.log(reason)
+      })
     }
   }
 }

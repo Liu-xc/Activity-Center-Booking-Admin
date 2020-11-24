@@ -66,11 +66,12 @@ export function deleteAdmin(UserID, UserName) {
 }
 
 /* 获取管理员名单 */
-export function getAdminList(params) {
+export function getAdminList(data, headers = {}) {
   return request({
     url: '/Admin/UserList',
-    method: 'get',
-    params
+    method: 'post',
+    headers,
+    data
   })
 }
 
