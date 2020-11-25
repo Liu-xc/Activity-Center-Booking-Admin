@@ -1,19 +1,20 @@
 import request from '@/utils/request'
+import { filterParams } from '@/utils/filterParams'
+// import { delete } from 'vue/types/umd'
 
-export function approve(params, headers = {}) {
+export function approve(params) {
   return request({
     url: '/Approval/Approve',
-    method: 'post',
-    headers,
-    data: params
+    method: 'get',
+    params: filterParams(params)
   })
 }
 
-export function filterApprove(data, headers = {}) {
+export function filterApprove(data) {
   return request({
     url: '/Approval/ApproveFilter',
-    method: 'post',
-    headers,
-    data
+    method: 'get',
+    params: filterParams(data)
   })
 }
+

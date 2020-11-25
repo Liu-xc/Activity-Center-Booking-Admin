@@ -90,20 +90,20 @@ export const constantRoutes = [
         meta: { title: '用户管理', icon: 'el-icon-receiving' }
       }
     ]
-  },
-  {
-    path: '/account',
-    component: Layout,
-    redirect: '/account/index',
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/account/index'),
-        name: 'Account',
-        meta: { title: '账号管理', icon: 'el-icon-s-custom', affix: false }
-      }
-    ]
   }
+  // {
+  //   path: '/account',
+  //   component: Layout,
+  //   redirect: '/account/index',
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/account/index'),
+  //       name: 'Account',
+  //       meta: { title: '账号管理', icon: 'el-icon-s-custom', affix: false }
+  //     }
+  //   ]
+  // }
 ]
 
 const createRouter = () => new Router({

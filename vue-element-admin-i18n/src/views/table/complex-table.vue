@@ -4,7 +4,7 @@
       <el-button type="primary" class="group-audit filter-item" @click="auditGroup">审核选中项</el-button>
       <!-- $t是用与语言转换的 -->
       <el-input
-        v-model="listQuery.reserveDepartment"
+        v-model.number="listQuery.reserveDepartment"
         placeholder="申请部门"
         style="width: 300px;"
         class="filter-item"
@@ -18,7 +18,7 @@
         @input="_handleFilter"
       />
       <el-select
-        v-model="listQuery.campus"
+        v-model.number="listQuery.campus"
         placeholder="校区"
         clearable
         style="width: 150px"
@@ -33,7 +33,7 @@
         />
       </el-select>
       <el-select
-        v-model="listQuery.reserveHall"
+        v-model.number="listQuery.reserveHall"
         placeholder="场地"
         clearable
         class="filter-item"
@@ -48,7 +48,7 @@
         />
       </el-select>
       <el-select
-        v-model="listQuery.reviewStatus"
+        v-model.number="listQuery.reviewStatus"
         placeholder="审核状态"
         clearable
         class="filter-item"
@@ -154,14 +154,7 @@
 
     <el-dialog title="详情" :visible.sync="dialogFormVisible">
       <div v-if="imgToCheck">
-        <el-image
-          :key="item"
-          :preview-src="imgToCheck"
-          class="detail-img"
-          fit="contain"
-          :src="item"
-          alt
-        >
+        <el-image :preview-src="imgToCheck" class="detail-img" fit="contain" :src="imgToCheck" alt>
           <div slot="error" class="image-slot">
             <i class="el-icon-picture-outline" />
           </div>
@@ -216,9 +209,13 @@
           </el-col>
         </el-form-item>
         <el-form-item label="审核状态">
-          <el-radio-group v-model="itemToAudit.reviewStatus">
+          <el-radio-group v-model.number="itemToAudit.reviewStatus">
             <template v-for="item of Object.keys(ReviewStatus)">
-              <el-radio :key="ReviewStatus[item]" :label="item">{{ ReviewStatus[item] }}</el-radio>
+              <el-radio
+                :key="ReviewStatus[item]"
+                :label="item*1"
+                :value="item"
+              >{{ ReviewStatus[item] }}</el-radio>
             </template>
           </el-radio-group>
         </el-form-item>
@@ -310,7 +307,7 @@ export default {
       campuses: this.Campuses
     }
   },
-  created() {
+  mounted() {
     this.getList()
   },
   methods: {
@@ -396,7 +393,6 @@ export default {
     /* 在这里要调用filterApprove */
     getList() {
       this.listLoading = true
-      console.log(this.$store.getters)
       filterApprove(this.listQuery, this.$store.getters.userinfo).then(response => {
         this.list = response.data.list
         this.total = response.data.total
@@ -410,7 +406,7 @@ export default {
       /* 将当前编辑的项提交 */
       const params = {
         aid: this.itemToAudit.aid,
-        reviewStatus: this.itemToAudit.reviewStatus,
+        reviewStatus: this.itemToAudit.reviewStatus * 1,
         reviewResponse: this.itemToAudit.remarks
       }
       approve(params).then(res => {

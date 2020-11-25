@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import { filterParams } from '@/utils/filterParams'
 
 export function fetchUserList(query) {
   return request({
@@ -66,12 +67,11 @@ export function deleteAdmin(UserID, UserName) {
 }
 
 /* 获取管理员名单 */
-export function getAdminList(data, headers = {}) {
+export function getAdminList(data) {
   return request({
     url: '/Admin/UserList',
-    method: 'post',
-    headers,
-    data
+    method: 'get',
+    params: filterParams(data)
   })
 }
 

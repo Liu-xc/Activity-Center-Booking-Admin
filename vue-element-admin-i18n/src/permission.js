@@ -1,5 +1,5 @@
 import router from './router'
-// import store from './store'
+import store from './store'
 // import { Message } from 'element-ui'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
@@ -12,11 +12,10 @@ NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
 router.beforeEach(async(to, from, next) => {
   // start progress bar
-  // NProgress.start()
+  NProgress.start()
 
   // set page title
   document.title = getPageTitle(to.meta.title)
-  next()
 
   // determine whether the user has logged in
   // const hasToken = getToken()
@@ -32,27 +31,27 @@ router.beforeEach(async(to, from, next) => {
   //     if (hasRoles) {
   //       next()
   //     } else {
-  //       try {
-  //         // get user info
-  //         // note: roles must be a object array! such as: ['admin'] or ,['developer','editor']
-  //         const { roles } = await store.dispatch('user/getInfo')
+  if (store.getters.userinfo.name) {
+    try {
+      // get user info
+      // note: roles must be a object array! such as: ['admin'] or ,['developer','editor']
+      const roles = await store.getters.userinfo.authority
 
-  //         // generate accessible routes map based on roles
-  //         const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
+      // generate accessible routes map based on roles
+      const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
+      // dynamically add accessible routes
+      router.addRoutes(accessRoutes)
+      next()
+      // hack method to ensure that addRoutes is complete
+      // set the replace: true, so the navigation will not leave a history record
+    } catch (error) {
+      // remove token and go to login page to re-login
+      // Message.error(error || 'Has Error')
+      console.log(error)
+      NProgress.done()
+    }
+  }
 
-  //         // dynamically add accessible routes
-  //         router.addRoutes(accessRoutes)
-
-  //         // hack method to ensure that addRoutes is complete
-  //         // set the replace: true, so the navigation will not leave a history record
-  //         next({ ...to, replace: true })
-  //       } catch (error) {
-  //         // remove token and go to login page to re-login
-  //         await store.dispatch('user/resetToken')
-  //         Message.error(error || 'Has Error')
-  //         next(`/login?redirect=${to.path}`)
-  //         NProgress.done()
-  //       }
   //     }
   //   }
   // } else {
@@ -69,7 +68,7 @@ router.beforeEach(async(to, from, next) => {
   // }
 })
 
-// router.afterEach(() => {
-//   // finish progress bar
-//   NProgress.done()
-// })
+router.afterEach(() => {
+  // finish progress bar
+  NProgress.done()
+})

@@ -218,7 +218,7 @@ export default {
         name: '',
         department: '',
         authority: '',
-        displayPage: 0,
+        displayPage: 1,
         displayRows: 5
       },
       searchTimer: null,
@@ -228,7 +228,7 @@ export default {
       }
     }
   },
-  created() {
+  mounted() {
     this.getList()
   },
   methods: {
@@ -347,8 +347,7 @@ export default {
         displayPage: this.listQuery.displayPage,
         displayRows: this.listQuery.displayRows
       }
-      getAdminList(params, this.$store.getters.userinfo).then(response => {
-        console.log(response)
+      getAdminList(params).then(response => {
         this.list = response.data.list
         this.total = response.data.total
 
