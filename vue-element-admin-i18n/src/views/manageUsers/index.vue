@@ -19,14 +19,14 @@
         @input="_handleFilter"
       />
       <el-input
-        v-model="listQuery.department"
+        v-model.number="listQuery.department"
         placeholder="用户所属"
         style="width: 230px;"
         class="filter-item"
         @input="_handleFilter"
       />
       <el-select
-        v-model="listQuery.authority"
+        v-model.number="listQuery.authority"
         placeholder="用户等级"
         clearable
         class="filter-item"
@@ -56,7 +56,7 @@
       border
       fit
       highlight-current-row
-      style="width: 75%; margin: 0 auto;"
+      style="width: 80%; margin: 0 auto;"
       @selection-change="handleSelection"
     >
       <el-table-column type="selection" label="勾选" width="80px" align="center">
@@ -64,17 +64,17 @@
           <el-checkbox label :data-row="row"></el-checkbox>
         </template>-->
       </el-table-column>
-      <el-table-column align="center" label="用户工号" width="200px">
+      <el-table-column align="center" label="用户工号" width="230px">
         <template slot-scope="{row}">
           <span>{{ row.workId }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="用户姓名" width="220px" align="center">
+      <el-table-column label="用户姓名" width="250px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="用户所属" width="300px" align="center">
+      <el-table-column label="用户所属" width="400px" align="center">
         <template slot-scope="{row}">
           <span>{{ Department[row.department + ''] }}</span>
         </template>
@@ -89,11 +89,11 @@
           <el-button type="primary" size="mini" @click="changeLevel(row)">修改等级</el-button>
         </template>
       </el-table-column>
-      <el-table-column label="删除" align="center" width="117" class-name="small-padding fixed-width">
+      <!-- <el-table-column label="删除" align="center" width="117" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button size="mini" type="danger" @click="deleteOne(row)">删除</el-button>
         </template>
-      </el-table-column>
+      </el-table-column>-->
     </el-table>
     <div class="checkall-and-page">
       <pagination
@@ -296,24 +296,27 @@ export default {
       /* 发起请求，请求成功后设置隐藏 */
     },
     /* 删除一个用户 */
-    deleteOne(row) {
-      this.$confirm(`此操作将删除用户 " ${row.name} " , 是否继续?`, '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        // deleteAdmin().then()
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
-        })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        })
-      })
-    },
+    // deleteOne (row) {
+
+    //   this.$confirm(`此操作将删除用户 " ${row.name} " , 是否继续?`, '提示', {
+    //     confirmButtonText: '确定',
+    //     cancelButtonText: '取消',
+    //     type: 'warning'
+    //   }).then(() => {
+    //     // deleteAdmin({row.}).then(
+    //     this.$message({
+    //       type: 'success',
+    //       message: '删除成功!'
+    //     })
+    //     // )
+
+    //   }).catch(() => {
+    //     this.$message({
+    //       type: 'info',
+    //       message: '已取消删除'
+    //     })
+    //   })
+    // },
     // 点击审核选中项时触发
     deleteGroup() {
       // 如果没有选中的项就什么也不做
@@ -343,11 +346,7 @@ export default {
     getList() {
       // getAdminList().then()
       this.listLoading = true
-      const params = {
-        displayPage: this.listQuery.displayPage,
-        displayRows: this.listQuery.displayRows
-      }
-      getAdminList(params).then(response => {
+      getAdminList(this.listQuery).then(response => {
         this.list = response.data.list
         this.total = response.data.total
 

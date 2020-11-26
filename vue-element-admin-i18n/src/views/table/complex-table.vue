@@ -252,6 +252,7 @@ import { Campuses, Halls, Department, Authority, ActivityType, ReviewStatus } fr
 import { handleFilter } from '../../utils/formHandlers'
 // import { approve } from '../../api/approve'
 import { approve, filterApprove } from '../../api/approve'
+import { getExcel } from '../../api/excel'
 
 export default {
   name: 'ComplexTable',
@@ -362,6 +363,9 @@ export default {
     //   return Promise.resolve(this.list.slice(3, 6))
     // },
     handleDownload() {
+      getExcel().then((res) => {
+        console.log(res)
+      })
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
         const tHeader = ['提交时间', '申请部门', '使用时间', '场地', '审核状态']

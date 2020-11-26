@@ -1,7 +1,7 @@
 import request from '@/utils/request'
 import { filterParams } from '@/utils/filterParams'
 
-export function fetchUserList(query) {
+export function fetchUserList(query = {}) {
   return request({
     url: '/vue-element-admin/user/user-list',
     method: 'get',
@@ -55,14 +55,11 @@ export function setAdmin(UserID, UserName) {
 }
 
 /* 删除管理员 */
-export function deleteAdmin(UserID, UserName) {
+export function deleteAdmin(params) {
   return request({
     url: '',
-    method: 'post',
-    data: {
-      UserID,
-      UserName
-    }
+    method: 'get',
+    params: filterParams(params)
   })
 }
 
