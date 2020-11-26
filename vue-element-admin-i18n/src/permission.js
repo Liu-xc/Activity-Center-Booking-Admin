@@ -1,4 +1,4 @@
-import router from './router'
+import router, { resetRouter } from './router'
 import store from './store'
 // import { Message } from 'element-ui'
 import NProgress from 'nprogress' // progress bar
@@ -19,18 +19,6 @@ router.beforeEach(async(to, from, next) => {
 
   // determine whether the user has logged in
   // const hasToken = getToken()
-
-  // if (hasToken) {
-  //   if (to.path === '/login') {
-  //     // if is logged in, redirect to the home page
-  //     next({ path: '/' })
-  //     NProgress.done() // hack: https://github.com/PanJiaChen/vue-element-admin/pull/2939
-  //   } else {
-  //     // determine whether the user has obtained his permission roles through getInfo
-  //     const hasRoles = store.getters.roles && store.getters.roles.length > 0
-  //     if (hasRoles) {
-  //       next()
-  //     } else {
   if (store.getters.userinfo.name) {
     try {
       // get user info
@@ -40,6 +28,7 @@ router.beforeEach(async(to, from, next) => {
       // generate accessible routes map based on roles
       const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
       // dynamically add accessible routes
+      resetRouter(router)
       router.addRoutes(accessRoutes)
       next()
       // hack method to ensure that addRoutes is complete
@@ -51,6 +40,17 @@ router.beforeEach(async(to, from, next) => {
       NProgress.done()
     }
   }
+  // if (hasToken) {
+  //   if (to.path === '/login') {
+  //     // if is logged in, redirect to the home page
+  //     next({ path: '/' })
+  //     NProgress.done() // hack: https://github.com/PanJiaChen/vue-element-admin/pull/2939
+  //   } else {
+  //     // determine whether the user has obtained his permission roles through getInfo
+  //     const hasRoles = store.getters.roles && store.getters.roles.length > 0
+  //     if (hasRoles) {
+  //       next()
+  //     } else {
 
   //     }
   //   }

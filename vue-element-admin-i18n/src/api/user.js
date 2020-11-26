@@ -37,8 +37,8 @@ export function logout() {
 export function changeAdminLevel(data) {
   return request({
     url: '/Admin/UpdateUser',
-    method: 'post',
-    data
+    method: 'get',
+    params: filterParams(data)
   })
 }
 

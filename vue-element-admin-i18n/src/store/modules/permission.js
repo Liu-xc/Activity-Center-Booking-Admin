@@ -6,7 +6,7 @@ import { asyncRoutes, constantRoutes } from '@/router'
  * @param route
  */
 function hasPermission(roles, route) {
-  if (route.meta && route.meta.roles) {
+  if (route.meta && [0, 1, 2].includes(route.meta.roles)) {
     return roles <= route.meta.roles
   } else {
     return true
@@ -20,7 +20,7 @@ function hasPermission(roles, route) {
  */
 export function filterAsyncRoutes(routes, roles) {
   const res = []
-
+  routes = routes || []
   routes.forEach(route => {
     const tmp = { ...route }
     if (hasPermission(roles, tmp)) {
@@ -41,9 +41,19 @@ const state = {
 
 const mutations = {
   SET_ROUTES: (state, routes) => {
+    // for (let item of state.routes) {
+    //   for (let p of routes) {
+
+    //     if(item.path === p.path) {
+    //       continue
+    //     } else {
+    //     }
+    //   }
+    // }
     state.addRoutes = routes
     state.routes = constantRoutes.concat(routes)
   }
+
 }
 
 const actions = {
@@ -51,7 +61,6 @@ const actions = {
     return new Promise(resolve => {
       let accessedRoutes
       if ((roles + '') === '0') {
-        console.log(roles)
         accessedRoutes = asyncRoutes || []
       } else {
         accessedRoutes = filterAsyncRoutes(asyncRoutes, roles)

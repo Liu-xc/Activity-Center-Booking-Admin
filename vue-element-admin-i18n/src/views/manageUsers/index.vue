@@ -36,7 +36,7 @@
         <el-option
           v-for="item in Object.keys(Authority)"
           :key="item"
-          :label="Authority[item]"
+          :label="item * 1"
           :value="item"
         />
       </el-select>
@@ -121,7 +121,7 @@
         <el-form-item label="用户等级">
           <el-radio-group v-model="userToHandle.authority">
             <template v-for="item in Object.keys(Authority)">
-              <el-radio :key="item" :label="item">{{ Authority[item + ''] }}</el-radio>
+              <el-radio :key="item" :label="item*1">{{ Authority[item + ''] }}</el-radio>
             </template>
           </el-radio-group>
         </el-form-item>
@@ -142,7 +142,7 @@
         <el-form-item label="用户等级" required>
           <el-radio-group v-model="userToAdd.authority">
             <template v-for="item in Object.keys(Authority)">
-              <el-radio :key="item" :label="item">{{ Authority[item + ''] }}</el-radio>
+              <el-radio :key="item" :label="item*1" :value="item">{{ Authority[item + ''] }}</el-radio>
             </template>
           </el-radio-group>
         </el-form-item>

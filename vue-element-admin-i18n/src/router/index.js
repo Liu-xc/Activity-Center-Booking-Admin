@@ -27,17 +27,40 @@ import Layout from '@/layout'
   }
  */
 
+export const asyncRoutes = [
+  {
+    path: '/dashboard',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/table/complex-table'),
+        name: 'ComplexTable',
+        meta: { title: '预约管理', icon: 'el-icon-s-check', affix: true }
+      }
+    ],
+    meta: { roles: 1 }
+  },
+  {
+    path: '/manage',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/manageUsers/index'),
+        name: 'ManageUsers',
+        meta: { title: '用户管理', icon: 'el-icon-receiving' }
+      }
+    ],
+    meta: { roles: 0 }
+  }
+]
 /**
  * constantRoutes
  * a base page that does not have permission requirements
  * all roles can be accessed
  */
 export const constantRoutes = [
-  // {
-  //   path: '/login',
-  //   component: () => import('@/views/login/index'),
-  //   hidden: true
-  // },
   {
     path: '/404',
     component: () => import('@/views/error-page/404'),
@@ -50,17 +73,8 @@ export const constantRoutes = [
   },
   {
     path: '/',
-    component: Layout,
-    redirect: '/dashboard',
-    children: [
-      {
-        path: 'dashboard',
-        component: () => import('@/views/table/complex-table'),
-        name: 'ComplexTable',
-        meta: { title: '预约管理', icon: 'el-icon-s-check', affix: true }
-      }
-    ]
-  },
+    component: Layout
+  }
   // {
   //   path: '/overall',
   //   component: Layout,
@@ -78,19 +92,7 @@ export const constantRoutes = [
   //     }
   //   ]
   // },
-  {
-    path: '/manage',
-    component: Layout,
-    redirect: '/manage/index',
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/manageUsers/index'),
-        name: 'ManageUsers',
-        meta: { title: '用户管理', icon: 'el-icon-receiving' }
-      }
-    ]
-  }
+
   // {
   //   path: '/account',
   //   component: Layout,
