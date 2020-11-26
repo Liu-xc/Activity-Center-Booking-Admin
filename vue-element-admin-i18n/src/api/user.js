@@ -1,5 +1,6 @@
 import request from '@/utils/request'
 import { filterParams } from '@/utils/filterParams'
+import { Department, Authority } from '../utils/StaticData'
 
 export function fetchUserList(query = {}) {
   return request({
@@ -12,8 +13,8 @@ export function fetchUserList(query = {}) {
 export function login(data) {
   return request({
     url: '/Login',
-    method: 'post',
-    data
+    method: 'get',
+    data: filterParams(data)
   })
 }
 
@@ -67,6 +68,30 @@ export function deleteAdmin(params) {
 export function getAdminList(data) {
   return request({
     url: '/Admin/UserList',
+    method: 'get',
+    params: filterParams(data)
+  })
+}
+
+export function userFilter(data) {
+  if (data.department !== '') {
+    for (const item in Department) {
+      if (Department[item] === data.department) {
+        data.department = item * 1
+        break
+      }
+    }
+  }
+  if (data.authority !== '') {
+    for (const item in Authority) {
+      if (Authority[item] === data.authority) {
+        data.authority = item * 1
+        break
+      }
+    }
+  }
+  return request({
+    url: '/Admin/UserFilter',
     method: 'get',
     params: filterParams(data)
   })

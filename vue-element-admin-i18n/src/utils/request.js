@@ -19,11 +19,11 @@ service.interceptors.request.use(
     // let each request carry token
     // ['X-Token'] is a custom headers key
     // please modify it according to the actual situation
-    config.headers['authority'] = userinfo.authority
-    config.headers['department'] = userinfo.department
+    config.headers['authority'] = userinfo.authority * 1
+    config.headers['department'] = userinfo.department * 1
     config.headers['name'] = encodeURIComponent(userinfo.name)
-    config.headers['uid'] = userinfo.uid
-    config.headers['workId'] = userinfo.workId
+    config.headers['uid'] = userinfo.uid * 1
+    config.headers['workId'] = userinfo.workId * 1
     return config
   },
   error => {

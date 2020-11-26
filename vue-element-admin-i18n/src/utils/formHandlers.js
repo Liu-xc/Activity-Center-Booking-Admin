@@ -25,7 +25,7 @@ function handleFilter(ctx, callback = undefined) {
     clearTimeout(ctx.searchTimer)
   }
   ctx.searchTimer = setTimeout(() => {
-    ctx.listQuery.DisplayPage = 1
+    ctx.listQuery.displayPage = 1
     callback && callback()
     clearTimeout(ctx.searchTimer)
     ctx.searchTimer = null

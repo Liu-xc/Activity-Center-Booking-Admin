@@ -1,29 +1,25 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-button type="primary" class="group-audit filter-item" @click="addUser">添加</el-button>
-      <el-button type="primary" class="group-audit filter-item" @click="deleteGroup">删除</el-button>
+      <!-- <el-button type="primary" class="group-audit filter-item" @click="addUser">添加</el-button> -->
       <!-- $t是用与语言转换的 -->
       <el-input
         v-model="listQuery.workId"
         placeholder="用户工号"
         style="width: 230px;"
         class="filter-item"
-        @input="_handleFilter"
       />
       <el-input
         v-model="listQuery.name"
         placeholder="用户名称"
         style="width: 230px;"
         class="filter-item"
-        @input="_handleFilter"
       />
       <el-input
         v-model.number="listQuery.department"
         placeholder="用户所属"
         style="width: 230px;"
         class="filter-item"
-        @input="_handleFilter"
       />
       <el-select
         v-model.number="listQuery.authority"
@@ -31,13 +27,12 @@
         clearable
         class="filter-item"
         style="width: 200px"
-        @input="_handleFilter"
       >
         <el-option
           v-for="item in Object.keys(Authority)"
           :key="item"
-          :label="item * 1"
-          :value="item"
+          :label="Authority[item]"
+          :value="Authority[item + '']"
         />
       </el-select>
       <el-button
@@ -57,13 +52,12 @@
       fit
       highlight-current-row
       style="width: 80%; margin: 0 auto;"
-      @selection-change="handleSelection"
     >
-      <el-table-column type="selection" label="勾选" width="80px" align="center">
-        <!-- <template slot-scope="{row}">
+      <!-- <el-table-column type="selection" label="勾选" width="80px" align="center"> -->
+      <!-- <template slot-scope="{row}">
           <el-checkbox label :data-row="row"></el-checkbox>
-        </template>-->
-      </el-table-column>
+      </template>-->
+      <!-- </el-table-column> -->
       <el-table-column align="center" label="用户工号" width="230px">
         <template slot-scope="{row}">
           <span>{{ row.workId }}</span>
@@ -160,8 +154,8 @@ import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 // import { ErrorCodes } from '../../utils/errorCodes'
 import { Department, Authority } from '../../utils/StaticData'
-import { handleFilter } from '../../utils/formHandlers'
-import { changeAdminLevel, getAdminList } from '../../api/user'
+// import { handleFilter } from '../../utils/formHandlers'
+import { changeAdminLevel, getAdminList, userFilter } from '../../api/user'
 // import { changeAdminLevel } from '../../api/user'
 
 export default {
@@ -243,7 +237,7 @@ export default {
     },
     /* 同步限制筛选范围 */
     _handleFilter() {
-      handleFilter(this, this.getList)
+      this.getList(true)
     },
     /* 关闭添加面板时，清除已经填写的内容 */
     onAddUserClose() {
@@ -343,10 +337,14 @@ export default {
       // 有空的话加一个提示信息
     },
     // 获取数据
-    getList() {
+    getList(filter = false) {
       // getAdminList().then()
+      let cb = getAdminList
+      if (filter) {
+        cb = userFilter
+      }
       this.listLoading = true
-      getAdminList(this.listQuery).then(response => {
+      cb({ ...this.listQuery }).then(response => {
         this.list = response.data.list
         this.total = response.data.total
 
@@ -365,6 +363,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-left: -140px;
 }
 .filter-item {
   margin-left: 15px;

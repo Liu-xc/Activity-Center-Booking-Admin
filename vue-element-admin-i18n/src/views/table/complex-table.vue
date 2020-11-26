@@ -4,18 +4,16 @@
       <el-button type="primary" class="group-audit filter-item" @click="auditGroup">审核选中项</el-button>
       <!-- $t是用与语言转换的 -->
       <el-input
-        v-model.number="listQuery.reserveDepartment"
+        v-model.number="listQuery.activityDepartment"
         placeholder="申请部门"
         style="width: 300px;"
         class="filter-item"
-        @input="_handleFilter"
       />
       <el-input
         v-model="listQuery.activity"
         placeholder="活动名称"
         style="width: 300px;"
         class="filter-item"
-        @input="_handleFilter"
       />
       <el-select
         v-model.number="listQuery.campus"
@@ -23,13 +21,12 @@
         clearable
         style="width: 150px"
         class="filter-item"
-        @input="_handleFilter"
       >
         <el-option
           v-for="item in Object.keys(Campuses)"
           :key="item"
           :label="Campuses[item]"
-          :value="item"
+          :value="Campuses[item]"
         />
       </el-select>
       <el-select
@@ -38,13 +35,12 @@
         clearable
         class="filter-item"
         style="width: 200px"
-        @input="_handleFilter"
       >
         <el-option
           v-for="item in Object.keys(Halls)"
           :key="item"
           :label="Halls[item]"
-          :value="item"
+          :value="Halls[item]"
         />
       </el-select>
       <el-select
@@ -53,13 +49,12 @@
         clearable
         class="filter-item"
         style="width: 130px"
-        @input="_handleFilter"
       >
         <el-option
           v-for="item in Object.keys(ReviewStatus)"
           :key="item"
           :label="ReviewStatus[item]"
-          :value="item"
+          :value="ReviewStatus[item]"
         />
       </el-select>
 
@@ -279,7 +274,7 @@ export default {
       itemToAudit: {
         requestTime: '',
         requestPeriod: [undefined, undefined],
-        reserveDepartment: '',
+        activityDepartment: '',
         activity: '',
         reviewStatus: '待审核',
         reserveHall: '',
@@ -294,7 +289,7 @@ export default {
       listQuery: { // 请求参数
         DisplayPage: 1,
         DisplayRows: 15,
-        reserveDepartment: '',
+        activityDepartment: '',
         activity: '',
         campus: '',
         reserveHall: '',
@@ -369,7 +364,7 @@ export default {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
         const tHeader = ['提交时间', '申请部门', '使用时间', '场地', '审核状态']
-        const filterVal = ['requestTime', 'reserveDepartment', 'requestPeriod', 'reserveHall', 'ApprovalStatus']
+        const filterVal = ['requestTime', 'activityDepartment', 'requestPeriod', 'reserveHall', 'ApprovalStatus']
         const data = this.formatJson(filterVal)
         excel.export_json_to_excel({
           header: tHeader,
@@ -397,7 +392,7 @@ export default {
     /* 在这里要调用filterApprove */
     getList() {
       this.listLoading = true
-      filterApprove(this.listQuery, this.$store.getters.userinfo).then(response => {
+      filterApprove({ ...this.listQuery }, this.$store.getters.userinfo).then(response => {
         this.list = response.data.list
         this.total = response.data.total
 
