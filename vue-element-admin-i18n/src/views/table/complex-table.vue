@@ -65,14 +65,14 @@
         icon="el-icon-search"
         @click="_handleFilter"
       >{{ $t('table.search') }}</el-button>
-      <el-button
+      <!-- <el-button
         v-waves
         :loading="downloadLoading"
         class="filter-item"
         type="primary"
         icon="el-icon-download"
         @click="handleDownload"
-      >{{ $t('table.export') }}</el-button>
+      >{{ $t('table.export') }}</el-button>-->
     </div>
 
     <el-table
@@ -99,13 +99,13 @@
         </template>
       </el-table-column>
       <!-- 申请部门 -->
-      <el-table-column label="申请部门" width="220px" align="center">
+      <el-table-column label="申请部门" width="230px" align="center">
         <template slot-scope="{row}">
           <span>{{ Department[row.uid + ''] }}</span>
         </template>
       </el-table-column>
       <!-- 使用时间段 -->
-      <el-table-column label="使用时间" width="300px" align="center">
+      <el-table-column label="使用时间" width="260px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.formalStart|parseTime('{m}-{d} {h}:{i}') }} —— {{ row.formalEnd|parseTime('{m}-{d} {h}:{i}') }}</span>
         </template>
@@ -117,7 +117,7 @@
         </template>
       </el-table-column>
       <!-- 活动名称 -->
-      <el-table-column align="center" label="活动名称" width="250px">
+      <el-table-column align="center" label="活动名称" width="200px">
         <template slot-scope="{row}">
           <span>{{ row.activity }}</span>
         </template>
@@ -128,10 +128,21 @@
           <span class="link-type">{{ ReviewStatus[row.reviewStatus + ''] }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="201" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="281" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="checkDetail(row)">详情</el-button>
           <el-button size="mini" type="success" @click="audit(row)">审核</el-button>
+          <download-excel style="display: inline;" :data="dataToExport">
+            <el-button
+              v-waves
+              :loading="downloadLoading"
+              class="filter-item"
+              type="primary"
+              size="mini"
+              icon="el-icon-download"
+              @click="handleDownload(row)"
+            >{{ $t('table.export') }}</el-button>
+          </download-excel>
         </template>
       </el-table-column>
     </el-table>
@@ -247,11 +258,11 @@ import { Campuses, Halls, Department, Authority, ActivityType, ReviewStatus } fr
 import { handleFilter } from '../../utils/formHandlers'
 // import { approve } from '../../api/approve'
 import { approve, filterApprove } from '../../api/approve'
-import { getExcel } from '../../api/excel'
+import DownloadExcel from 'vue-json-excel'
 
 export default {
   name: 'ComplexTable',
-  components: { Pagination },
+  components: { Pagination, DownloadExcel },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -271,6 +282,7 @@ export default {
       auditDialogVisible: false,
       auditChecked: false, // 区分展开Dialog的是批量审核还是冲突审核
       checkAll: false,
+      dataToExport: [],
       itemToAudit: {
         requestTime: '',
         requestPeriod: [undefined, undefined],
@@ -357,22 +369,22 @@ export default {
     //   // 携带参数发送请求获取冲突数组
     //   return Promise.resolve(this.list.slice(3, 6))
     // },
-    handleDownload() {
-      getExcel().then((res) => {
-        console.log(res)
-      })
+    /* 将行元素设置为待导出的对象 */
+    handleDownload(row) {
       this.downloadLoading = true
-      import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['提交时间', '申请部门', '使用时间', '场地', '审核状态']
-        const filterVal = ['requestTime', 'activityDepartment', 'requestPeriod', 'reserveHall', 'ApprovalStatus']
-        const data = this.formatJson(filterVal)
-        excel.export_json_to_excel({
-          header: tHeader,
-          data,
-          filename: 'table-list'
-        })
-        this.downloadLoading = false
+      /* export excel */
+      /* 取出需要的字段 */
+      const attrNeeded = ['activityDepartment', 'activity', 'activityHolder', 'contact', 'arrageStart', 'arrageEnd', 'arrageSound', 'rehearsalStart', 'rehearsalEnd', 'rehearsalSound', 'formalStart', 'formalEnd', 'reserveHall', 'remarks']
+      const dataObj = {}
+      attrNeeded.forEach(v => {
+        dataObj[v] = row[v]
       })
+      this.dataToExport = [
+        { colA: 'good', colB: 'evening', colC: 'Daizy' },
+        { colA: 'hello', colB: 'world' },
+        { colA: 'good morning' }
+      ]
+      this.downloadLoading = false
     },
     formatJson(filterVal) {
       return this.list.map(v => filterVal.map(j => {
