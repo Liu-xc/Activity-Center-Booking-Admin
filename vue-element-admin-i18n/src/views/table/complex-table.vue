@@ -132,7 +132,7 @@
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="checkDetail(row)">详情</el-button>
           <el-button size="mini" type="success" @click="audit(row)">审核</el-button>
-          <download-excel style="display: inline;" :data="dataToExport">
+          <download-excel style="display: inline;" :fields="jsonFields" :data="dataToExport">
             <el-button
               v-waves
               :loading="downloadLoading"
@@ -283,6 +283,17 @@ export default {
       auditChecked: false, // 区分展开Dialog的是批量审核还是冲突审核
       checkAll: false,
       dataToExport: [],
+      jsonFields: {
+        'activity': 'activity',
+        'department': 'activityDepartment',
+        'start': 'formalStart',
+        'period': {
+          field: {
+            'start': 'formalStart',
+            'end': 'formalEnd'
+          }
+        }
+      },
       itemToAudit: {
         requestTime: '',
         requestPeriod: [undefined, undefined],
@@ -317,6 +328,9 @@ export default {
   },
   mounted() {
     this.getList()
+    const appid = this.$route.query.appid
+    const token = this.$route.query.token
+    console.log(appid, token)
   },
   methods: {
     audit(row) {
@@ -381,7 +395,9 @@ export default {
       })
       this.dataToExport = [
         { colA: 'good', colB: 'evening', colC: 'Daizy' },
-        { colA: 'hello', colB: 'world' },
+        {
+          colA: 'hello', colB: undefined
+        },
         { colA: 'good morning' }
       ]
       this.downloadLoading = false

@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { Message } from 'element-ui'
 import store from '@/store'
-import { ErrorCodes } from './errorCodes'
+// import { ErrorCodes } from './errorCodes'
 
 // create an axios instance
 const service = axios.create({
@@ -52,7 +52,7 @@ service.interceptors.response.use(
     if (res.code + '' !== '200') {
       console.log(res)
       Message({
-        message: ErrorCodes && ErrorCodes[res.code + ''] || '未知异常',
+        message: res.msg,
         type: 'error',
         duration: 3 * 1000
       })

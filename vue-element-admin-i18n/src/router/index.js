@@ -74,25 +74,58 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout
+  },
+  {
+    path: '/overall',
+    component: Layout,
+    redirect: '/overall/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/toC/overall/index'),
+        name: 'ReserveOverall',
+        meta: {
+          title: '预约情况',
+          icon: 'el-icon-view',
+          affix: false
+        }
+      }
+    ]
+  },
+  {
+    path: '/myreserve',
+    component: Layout,
+    redirect: '/myreserve/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/toC/myReserve/index'),
+        name: 'MyReserve',
+        meta: {
+          title: '我的预约',
+          icon: 'el-icon-s-claim',
+          affix: false
+        }
+      }
+    ]
+  },
+  {
+    path: '/newreserve',
+    component: Layout,
+    redirect: '/newreserve/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/toC/newReserve/index'),
+        name: 'NewReserve',
+        meta: {
+          title: '新建预约',
+          icon: 'el-icon-s-promotion',
+          affix: true
+        }
+      }
+    ]
   }
-  // {
-  //   path: '/overall',
-  //   component: Layout,
-  //   redirect: '/overall/index',
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       component: () => import('@/views/overall/index'),
-  //       name: 'BookOverall',
-  //       meta: {
-  //         title: '预约情况',
-  //         icon: 'el-icon-view',
-  //         affix: false
-  //       }
-  //     }
-  //   ]
-  // },
-
   // {
   //   path: '/account',
   //   component: Layout,

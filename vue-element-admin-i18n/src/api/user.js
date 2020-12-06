@@ -14,7 +14,7 @@ export function login(data) {
   return request({
     url: '/Login',
     method: 'get',
-    data: filterParams(data)
+    params: filterParams(data)
   })
 }
 
