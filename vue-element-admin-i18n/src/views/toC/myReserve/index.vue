@@ -1,56 +1,66 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
+      <el-input v-model="listQuery.activity" style="width: 200px;" placeholder="活动名称" />
+
       <el-select
-        v-model="listQuery.importance"
+        v-model.number="listQuery.campus"
         placeholder="校区"
         clearable
-        style="width: 90px"
+        style="width: 150px"
         class="filter-item"
       >
-        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />
+        <el-option
+          v-for="item in Object.keys(Campuses)"
+          :key="item"
+          :label="Campuses[item]"
+          :value="Campuses[item]"
+        />
+      </el-select>
+
+      <el-select
+        v-model.number="listQuery.reserveHall"
+        placeholder="场地"
+        clearable
+        class="filter-item"
+        style="width: 200px"
+      >
+        <el-option
+          v-for="item in Object.keys(Halls)"
+          :key="item"
+          :label="Halls[item]"
+          :value="Halls[item]"
+        />
       </el-select>
       <el-select
-        v-model="listQuery.type"
-        placeholder="场地"
+        v-model.number="listQuery.activityType"
+        placeholder="活动类别"
+        clearable
+        class="filter-item"
+        style="width: 200px"
+      >
+        <el-option
+          v-for="item in Object.keys(ActivityType)"
+          :key="item"
+          :label="ActivityType[item]"
+          :value="ActivityType[item]"
+        />
+      </el-select>
+      <el-select
+        v-model.number="listQuery.reviewStatus"
+        placeholder="审核状态"
         clearable
         class="filter-item"
         style="width: 130px"
       >
         <el-option
-          v-for="item in calendarTypeOptions"
-          :key="item.key"
-          :label="item.display_name+'('+item.key+')'"
-          :value="item.key"
+          v-for="item in Object.keys(ReviewStatus)"
+          :key="item"
+          :label="ReviewStatus[item]"
+          :value="ReviewStatus[item]"
         />
       </el-select>
-      <el-select
-        v-model="listQuery.sort"
-        placeholder="申请类别"
-        style="width: 140px"
-        class="filter-item"
-      >
-        <el-option
-          v-for="item in sortOptions"
-          :key="item.key"
-          :label="item.label"
-          :value="item.key"
-        />
-      </el-select>
-      <el-select
-        v-model="listQuery.sort"
-        placeholder="审核状态"
-        style="width: 140px"
-        class="filter-item"
-      >
-        <el-option
-          v-for="item in sortOptions"
-          :key="item.key"
-          :label="item.label"
-          :value="item.key"
-        />
-      </el-select>
-      <el-button class="filter-item" type="primary" icon="el-icon-search">搜索</el-button>
+      <el-button class="filter-item" type="primary" icon="el-icon-search" @click="getReserveList">搜索</el-button>
     </div>
 
     <el-table
@@ -107,8 +117,9 @@
       <pagination
         v-show="total>0"
         :total="total"
-        :page.sync="listQuery.page"
-        :limit.sync="listQuery.limit"
+        :page.sync="listQuery.displayPage"
+        :limit.sync="listQuery.displayRows"
+        :page-sizes="[10, 15, 20, 30, 40, 50]"
         style="margin: 10px;"
       />
     </div>
@@ -120,6 +131,8 @@
 // import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import { Campuses, Halls, Department, Authority, ActivityType, ReviewStatus } from '../../../utils/StaticData'
+import { filterMyRequest } from '../../../api/reserve'
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -180,21 +193,22 @@ export default {
       total: 100,
       listLoading: false,
       listQuery: {
-        page: 1,
-        limit: 20,
-        importance: undefined,
-        title: undefined,
-        type: undefined,
-        sort: '+id'
+        displayPage: 1,
+        displayRows: 20,
+        campus: null,
+        reviewStatus: null,
+        reserveHall: null,
+        activityType: null,
+        activity: null
       },
-      importanceOptions: [1, 2, 3],
+      campusOptions: [1, 2, 3],
       calendarTypeOptions,
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusOptions: ['published', 'draft', 'deleted'],
       showReviewer: false,
       temp: {
         id: undefined,
-        importance: 1,
+        campus: 1,
         remark: '',
         timestamp: new Date(),
         title: '',
@@ -214,13 +228,28 @@ export default {
         timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
         title: [{ required: true, message: 'title is required', trigger: 'blur' }]
       },
-      downloadLoading: false
+      downloadLoading: false,
+      Campuses, Halls, Department, Authority, ActivityType, ReviewStatus
     }
   },
   created() {
+    this.getReserveList()
   },
   methods: {
-    parseTime
+    parseTime,
+    getReserveList() {
+      filterMyRequest({ ...this.listQuery }).then(
+        res => {
+          this.list = res.list
+        }
+      ).catch(err => {
+        this.$message({
+          message: err.msg,
+          type: 'error'
+        })
+        console.log(err)
+      })
+    }
   }
 }
 </script>

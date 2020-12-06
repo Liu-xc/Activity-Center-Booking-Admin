@@ -1,5 +1,6 @@
 import request from '@/utils/request'
 import { filterParams } from '@/utils/filterParams'
+import { transParams } from '../utils/transParams'
 
 export function newApply(params) {
   return request({
@@ -20,10 +21,11 @@ export function applyOverall(params) {
 
 /* 通过前端传入的过滤条件返回查询到符合条件的登录用户的预约情况 */
 export function filterMyRequest(params) {
+  /* 将数据转换（校区、审核状态、活动类别、厅） */
   return request({
     url: 'Apply/ApplyStatusFilter',
     method: 'post',
-    data: filterParams(params)
+    data: filterParams(transParams(params))
   })
 }
 
