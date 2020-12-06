@@ -50,7 +50,7 @@
           :value="item.key"
         />
       </el-select>
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search">搜索</el-button>
+      <el-button class="filter-item" type="primary" icon="el-icon-search">搜索</el-button>
     </div>
 
     <el-table
