@@ -64,7 +64,6 @@
     </div>
 
     <el-table
-      :key="tableKey"
       v-loading="listLoading"
       :data="list"
       border
@@ -74,7 +73,7 @@
     >
       <el-table-column label="预定场地" width="110px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.reserveHall }}</span>
+          <span>{{ Halls[row.reserveHall + ''] }}</span>
         </template>
       </el-table-column>
 
@@ -96,20 +95,22 @@
 
       <el-table-column label="审核状态" width="138px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.reviewStatus }}</span>
+          <span>{{ ReviewStatus[row.reviewStatus + ''] }}</span>
         </template>
       </el-table-column>
       <el-table-column label="审核备注" width="120px" align="center">
-        <template>
-          <el-button type="primary" size="mini" icon="el-icon-view">查看备注</el-button>
+        <template slot-scope="{row}">
+          <el-button type="primary" size="mini" icon="el-icon-view" @click="check(row)">查看备注</el-button>
         </template>
       </el-table-column>
 
       <el-table-column label="操作" align="center" width="400" class-name="small-padding fixed-width">
-        <el-button type="primary" size="mini" icon="el-icon-view">编辑/查看</el-button>
-        <el-button size="mini" type="primary" icon="el-icon-upload">上传图片</el-button>
-        <el-button size="mini" type="primary" icon="el-icon-upload2">导出</el-button>
-        <el-button size="mini" type="danger" icon="el-icon-delete">删除</el-button>
+        <template slot-scope="{row}">
+          <el-button type="primary" size="mini" icon="el-icon-view" @click="check(row)">编辑/查看</el-button>
+          <el-button size="mini" type="primary" icon="el-icon-upload" @click="check(row)">上传图片</el-button>
+          <el-button size="mini" type="primary" icon="el-icon-upload2" @click="exportExcel(row)">导出</el-button>
+          <el-button size="mini" type="danger" icon="el-icon-delete" @click="deleteApply(row)">删除</el-button>
+        </template>
       </el-table-column>
     </el-table>
 
@@ -123,73 +124,24 @@
         style="margin: 10px;"
       />
     </div>
+    <el-dialog title="提示" :visible.sync="dialogVisible" width="30%" />
   </div>
 </template>
 
 <script>
-// import { fetchList, fetchPv, createArticle, updateArticle } from '@/api/article'
-// import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { Campuses, Halls, Department, Authority, ActivityType, ReviewStatus } from '../../../utils/StaticData'
 import { filterMyRequest } from '../../../api/reserve'
 
-const calendarTypeOptions = [
-  { key: 'CN', display_name: 'China' },
-  { key: 'US', display_name: 'USA' },
-  { key: 'JP', display_name: 'Japan' },
-  { key: 'EU', display_name: 'Eurozone' }
-]
-
-// arr to obj, such as { CN : "China", US : "USA" }
-const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
-  acc[cur.key] = cur.display_name
-  return acc
-}, {})
-
 export default {
   name: 'MyReverse',
   components: { Pagination },
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
-      }
-      return statusMap[status]
-    },
-    typeFilter(type) {
-      return calendarTypeKeyValue[type]
-    }
-  },
   data() {
     return {
-      tableKey: 0,
-      list: [{
-        'arrangeEnd': null,
-        'formalStart': '2020-11-12 09:44:26',
-        'activity': '测试',
-        'rehearsalEnd': null,
-        'arrangeStart': null,
-        'rehearsalStart': null,
-        'formalEnd': '2020-11-12 09:54:26',
-        'reserveHall': 0,
-        'aid': 3,
-        'activityDepartment': '0'
-      },
-      {
-        'arrangeEnd': '2020-11-12 10:54:26',
-        'formalStart': null,
-        'activity': '中国航天科工851',
-        'rehearsalEnd': null,
-        'arrangeStart': '2020-11-12 10:44:26',
-        'rehearsalStart': null,
-        'formalEnd': null,
-        'reserveHall': 1,
-        'aid': 4,
-        'activityDepartment': '0'
-      }],
+      itemToHandle: null,
+      dialogVisible: false,
+      list: [],
       total: 100,
       listLoading: false,
       listQuery: {
@@ -201,34 +153,11 @@ export default {
         activityType: null,
         activity: null
       },
-      campusOptions: [1, 2, 3],
-      calendarTypeOptions,
-      sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
-      statusOptions: ['published', 'draft', 'deleted'],
-      showReviewer: false,
-      temp: {
-        id: undefined,
-        campus: 1,
-        remark: '',
-        timestamp: new Date(),
-        title: '',
-        type: '',
-        status: 'published'
-      },
-      dialogFormVisible: false,
-      dialogStatus: '',
-      textMap: {
-        update: 'Edit',
-        create: 'Create'
-      },
-      dialogPvVisible: false,
-      pvData: [],
       rules: {
         type: [{ required: true, message: 'type is required', trigger: 'change' }],
         timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
         title: [{ required: true, message: 'title is required', trigger: 'blur' }]
       },
-      downloadLoading: false,
       Campuses, Halls, Department, Authority, ActivityType, ReviewStatus
     }
   },
@@ -237,10 +166,110 @@ export default {
   },
   methods: {
     parseTime,
+    check(row) {
+      this.itemToHandle = row
+      this.dialogVisible = true
+    },
+    exportExcel(row) {
+      this.itemToHandle = row
+    },
+    deleteApply(row) {
+      this.itemToHandle = row
+    },
     getReserveList() {
       filterMyRequest({ ...this.listQuery }).then(
         res => {
-          this.list = res.list
+          res = {
+            'data': {
+              'pageNum': 1,
+              'pageSize': 2,
+              'size': 2,
+              'startRow': 1,
+              'endRow': 2,
+              'total': 7,
+              'pages': 4,
+              'list': [
+                {
+                  'aid': 6,
+                  'uid': 1,
+                  'createTime': null,
+                  'updateTime': null,
+                  'campus': 0,
+                  'reserveHall': 0,
+                  'activity': null,
+                  'activityType': 0,
+                  'arrangeDate': null,
+                  'arrangeStart': null,
+                  'arrangeEnd': null,
+                  'arrangeSound': false,
+                  'rehearsalDate': null,
+                  'rehearsalStart': null,
+                  'rehearsalEnd': null,
+                  'rehearsalSound': false,
+                  'formalDate': null,
+                  'formalStart': null,
+                  'formalEnd': null,
+                  'remarks': null,
+                  'activityHolder': null,
+                  'activityDepartment': 0,
+                  'applicant': 'test',
+                  'contact': '1111111',
+                  'reviewStatus': 0,
+                  'reviewResponse': null,
+                  'imageUrl': null
+                },
+                {
+                  'aid': 7,
+                  'uid': 1,
+                  'createTime': null,
+                  'updateTime': null,
+                  'campus': 0,
+                  'reserveHall': 0,
+                  'activity': null,
+                  'activityType': 0,
+                  'arrangeDate': null,
+                  'arrangeStart': null,
+                  'arrangeEnd': null,
+                  'arrangeSound': false,
+                  'rehearsalDate': null,
+                  'rehearsalStart': null,
+                  'rehearsalEnd': null,
+                  'rehearsalSound': false,
+                  'formalDate': null,
+                  'formalStart': null,
+                  'formalEnd': null,
+                  'remarks': null,
+                  'activityHolder': null,
+                  'activityDepartment': 0,
+                  'applicant': 'test',
+                  'contact': '1111111',
+                  'reviewStatus': 0,
+                  'reviewResponse': null,
+                  'imageUrl': null
+                }
+              ],
+              'prePage': 0,
+              'nextPage': 2,
+              'isFirstPage': true,
+              'isLastPage': false,
+              'hasPreviousPage': false,
+              'hasNextPage': true,
+              'navigatePages': 8,
+              'navigatepageNums': [
+                1,
+                2,
+                3,
+                4
+              ],
+              'navigateFirstPage': 1,
+              'navigateLastPage': 4,
+              'firstPage': 1,
+              'lastPage': 4
+            },
+            'code': 200,
+            'msg': 'SUCCESS'
+          }
+          this.list = res.data.list
         }
       ).catch(err => {
         this.$message({

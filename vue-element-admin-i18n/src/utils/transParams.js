@@ -9,6 +9,14 @@ export function transParams(params) {
       }
     }
   }
+  if (params.applyDepartment !== '') {
+    for (const item in Department) {
+      if (Department[item] === params.applyDepartment) {
+        params.applyDepartment = item * 1
+        break
+      }
+    }
+  }
   if (params.campus !== '') {
     for (const item in Campuses) {
       if (Campuses[item] === params.campus) {

@@ -4,9 +4,9 @@ import { transParams } from '../utils/transParams'
 
 export function newApply(params) {
   return request({
-    url: '/Apply/AddApply ',
-    method: 'post',
-    data: filterParams(params)
+    url: '/Apply/AddApply',
+    method: 'get',
+    params: filterParams(transParams(params))
   })
 }
 
@@ -24,8 +24,8 @@ export function filterMyRequest(params) {
   /* 将数据转换（校区、审核状态、活动类别、厅） */
   return request({
     url: 'Apply/ApplyStatusFilter',
-    method: 'post',
-    data: filterParams(transParams(params))
+    method: 'get',
+    params: filterParams(transParams(params))
   })
 }
 

@@ -21,10 +21,14 @@
           />
         </el-col>
         <el-col :span="6">
-          <el-time-picker v-model="form.arrangeStart" placeholder="开始时间" style="width: 100%;" />
+          <el-form-item prop="arrangeStart">
+            <el-time-picker v-model="form.arrangeStart" placeholder="开始时间" style="width: 100%;" />
+          </el-form-item>
         </el-col>
         <el-col :span="6">
-          <el-time-picker v-model="form.arrangeEnd" placeholder="结束时间" style="width: 100%;" />
+          <el-form-item label prop="arrangeEnd">
+            <el-time-picker v-model="form.arrangeEnd" placeholder="结束时间" style="width: 100%;" />
+          </el-form-item>
         </el-col>
       </el-form-item>
       <el-form-item label="布场是否需要音控" prop="arrangeSound">
@@ -43,10 +47,14 @@
           />
         </el-col>
         <el-col :span="6">
-          <el-time-picker v-model="form.rehearsalStart" placeholder="开始时间" style="width: 100%;" />
+          <el-form-item label prop="rehearsalStart">
+            <el-time-picker v-model="form.rehearsalStart" placeholder="开始时间" style="width: 100%;" />
+          </el-form-item>
         </el-col>
         <el-col :span="6">
-          <el-time-picker v-model="form.rehearsalEnd" placeholder="结束时间" style="width: 100%;" />
+          <el-form-item label prop="rehearsalEnd">
+            <el-time-picker v-model="form.rehearsalEnd" placeholder="结束时间" style="width: 100%;" />
+          </el-form-item>
         </el-col>
       </el-form-item>
       <el-form-item label="彩排是否需要音控" prop="rehearsalSound">
@@ -57,10 +65,14 @@
           <el-date-picker v-model="form.date" type="date" placeholder="选择日期" style="width: 100%;" />
         </el-col>
         <el-col :span="6">
-          <el-time-picker v-model="form.start" placeholder="开始时间" style="width: 100%;" />
+          <el-form-item label prop="start">
+            <el-time-picker v-model="form.start" placeholder="开始时间" style="width: 100%;" />
+          </el-form-item>
         </el-col>
         <el-col :span="6">
-          <el-time-picker v-model="form.end" placeholder="结束时间" style="width: 100%;" />
+          <el-form-item label prop="end">
+            <el-time-picker v-model="form.end" placeholder="结束时间" style="width: 100%;" />
+          </el-form-item>
         </el-col>
       </el-form-item>
 
@@ -100,6 +112,7 @@
 </template>
 
 <script>
+import { newApply } from '@/api/reserve'
 export default {
   name: 'NewReserve',
   data() {
@@ -159,9 +172,24 @@ export default {
     onSubmit() {
       this.$refs['form'].validate((valid) => {
         if (valid) {
-          alert('submit!')
+          newApply(Object.assign({}, this.form)).then(res => {
+            if (res.code * 1 === 200) {
+              this.$message({
+                message: '提交成功',
+                type: 'success'
+              })
+            }
+          }).catch(err => {
+            this.$message({
+              message: err.msg,
+              type: 'error'
+            })
+          })
         } else {
-          console.log('error submit!!')
+          this.$message({
+            message: '请检查填写内容',
+            type: 'warning'
+          })
           return false
         }
       })

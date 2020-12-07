@@ -59,20 +59,11 @@
       </el-select>
 
       <el-button
-        v-waves
         class="filter-item"
         type="primary"
         icon="el-icon-search"
         @click="_handleFilter"
       >{{ $t('table.search') }}</el-button>
-      <!-- <el-button
-        v-waves
-        :loading="downloadLoading"
-        class="filter-item"
-        type="primary"
-        icon="el-icon-download"
-        @click="handleDownload"
-      >{{ $t('table.export') }}</el-button>-->
     </div>
 
     <el-table
@@ -134,7 +125,6 @@
           <el-button size="mini" type="success" @click="audit(row)">审核</el-button>
           <download-excel style="display: inline;" :fields="jsonFields" :data="dataToExport">
             <el-button
-              v-waves
               :loading="downloadLoading"
               class="filter-item"
               type="primary"
@@ -250,7 +240,6 @@
 
 <script>
 // import { fetchList } from '@/api/article'
-import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 // import { ErrorCodes } from '../../utils/errorCodes'
@@ -263,17 +252,6 @@ import DownloadExcel from 'vue-json-excel'
 export default {
   name: 'ComplexTable',
   components: { Pagination, DownloadExcel },
-  directives: { waves },
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
-      }
-      return statusMap[status]
-    }
-  },
   data() {
     return {
       auditListLen: 1, // 要审核的列表长度
@@ -328,9 +306,6 @@ export default {
   },
   mounted() {
     this.getList()
-    const appid = this.$route.query.appid
-    const token = this.$route.query.token
-    console.log(appid, token)
   },
   methods: {
     audit(row) {
