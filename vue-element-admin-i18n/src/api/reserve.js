@@ -42,8 +42,8 @@ export function updateApply(params) {
 export function deleteApply(params) {
   return request({
     url: '/Apply/DeleteApply',
-    method: 'post',
-    data: filterParams(params)
+    method: 'get',
+    params: filterParams(params)
   })
 }
 

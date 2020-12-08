@@ -69,7 +69,7 @@
       border
       fit
       highlight-current-row
-      style="width: 100%;"
+      style="width: 100%; font-size: 10px;"
     >
       <el-table-column label="预定场地" width="110px" align="center">
         <template slot-scope="{row}">
@@ -77,17 +77,17 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="布场时间" width="300px" align="center">
+      <el-table-column label="布场时间" width="240px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.arrangeStart | parseTime('{y}-{m}-{d} {h}:{i}') }} - {{ row.arrangeStart | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="彩排时间" width="300px" align="center">
+      <el-table-column label="彩排时间" width="240px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.rehearsalStart | parseTime('{y}-{m}-{d} {h}:{i}') }} - {{ row.rehearsalStart | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="演出时间" width="300px" align="center">
+      <el-table-column label="演出时间" width="240px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.formalStart | parseTime('{y}-{m}-{d} {h}:{i}') }} - {{ row.formalStart | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
@@ -98,9 +98,11 @@
           <span>{{ ReviewStatus[row.reviewStatus + ''] }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="审核备注" width="120px" align="center">
+      <el-table-column label="审核备注" width="300px" align="center">
         <template slot-scope="{row}">
-          <el-button type="primary" size="mini" icon="el-icon-view" @click="check(row)">查看备注</el-button>
+          <div
+            class="review-response"
+          >{{ row.reviewResponse + 'dassssssssssssssssssssssssssssssssssssssssssssssssss' }}</div>
         </template>
       </el-table-column>
 
@@ -124,7 +126,10 @@
         style="margin: 10px;"
       />
     </div>
-    <el-dialog title="提示" :visible.sync="dialogVisible" width="30%" />
+    <el-dialog title="提示" :visible.sync="dialogVisible" width="30%">
+      <!-- 展示itemToHandle -->
+      <div class="dialog-container" />
+    </el-dialog>
   </div>
 </template>
 
@@ -132,7 +137,7 @@
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { Campuses, Halls, Department, Authority, ActivityType, ReviewStatus } from '../../../utils/StaticData'
-import { filterMyRequest } from '../../../api/reserve'
+import { filterMyRequest, deleteApply } from '../../../api/reserve'
 
 export default {
   name: 'MyReverse',
@@ -168,13 +173,31 @@ export default {
     parseTime,
     check(row) {
       this.itemToHandle = row
-      this.dialogVisible = true
+      // this.dialogVisible = true
+      this.$router.push()
     },
     exportExcel(row) {
       this.itemToHandle = row
     },
     deleteApply(row) {
-      this.itemToHandle = row
+      this.$confirm('确认删除本次申请？').then(() => {
+        // 执行删除的业务
+        return deleteApply({ aid: row.aid })
+      }).then(res => {
+        console.log(res)
+        if (res.code * 1 === 200) {
+          this.$message({
+            message: '删除成功',
+            type: 'success'
+          })
+        }
+      })
+        .catch(err => {
+          this.$message({
+            message: '删除已取消'
+          })
+          console.log(err)
+        })
     },
     getReserveList() {
       filterMyRequest({ ...this.listQuery }).then(
@@ -199,8 +222,8 @@ export default {
                   'activity': null,
                   'activityType': 0,
                   'arrangeDate': null,
-                  'arrangeStart': null,
-                  'arrangeEnd': null,
+                  'arrangeStart': new Date(),
+                  'arrangeEnd': new Date(),
                   'arrangeSound': false,
                   'rehearsalDate': null,
                   'rehearsalStart': null,

@@ -114,7 +114,7 @@
 <script>
 import { newApply } from '@/api/reserve'
 export default {
-  name: 'NewReserve',
+  name: 'EditReserve',
   data() {
     return {
       form: {

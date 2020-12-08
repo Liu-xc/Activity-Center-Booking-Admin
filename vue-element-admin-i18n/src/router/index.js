@@ -110,16 +110,16 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/newreserve',
+    path: '/editreserve',
     component: Layout,
-    redirect: '/newreserve/index',
+    redirect: '/editreserve/index',
     children: [
       {
         path: 'index',
-        component: () => import('@/views/toC/newReserve/index'),
-        name: 'NewReserve',
+        component: () => import('@/views/toC/editReserve/index'),
+        name: 'EditReserve',
         meta: {
-          title: '新建预约',
+          title: '编辑预约',
           icon: 'el-icon-s-promotion',
           affix: true
         }
