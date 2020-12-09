@@ -103,7 +103,7 @@
       </el-col>
       <el-col :span="24">
         <el-form-item>
-          <el-button type="primary" @click="onSubmit">立即创建</el-button>
+          <el-button type="primary" @click="onSubmit">{{ isEditPage ? '提交修改' : '立即创建' }}</el-button>
           <el-button @click="resetForm">重置</el-button>
         </el-form-item>
       </el-col>
@@ -113,30 +113,16 @@
 
 <script>
 import { newApply } from '@/api/reserve'
+import { Department, Halls } from '@/utils/StaticData'
+import { cloneDeep } from 'lodash'
+import { presetForm } from './index.js'
 export default {
   name: 'EditReserve',
   data() {
     return {
-      form: {
-        reserveHall: null,
-        activity: null,
-        arrangeData: null,
-        arrangeStart: null,
-        arrangeEnd: null,
-        arrangeSound: false,
-        rehearsalData: null,
-        rehearsalStart: null,
-        rehearsalEnd: null,
-        rehearsalSound: false,
-        data: null,
-        start: null,
-        end: null,
-        activityHolder: null,
-        applyDepartment: null,
-        applicant: null,
-        contact: null,
-        remarks: null
-      },
+      isEditPage: false,
+      query: {},
+      form: cloneDeep(presetForm),
       rules: {
         reserveHall: [
           { required: true, message: '请输入要预约的会议室' }
@@ -168,6 +154,29 @@ export default {
       }
     }
   },
+  created() {
+    const query = cloneDeep(this.$route.query)
+    if (query && query.fromMyReserve) {
+      // 是从MyReserve跳转过来的
+      // 保存原始query
+      this.query = query
+      // 会议室和申请部门需要转化
+      // 注意这里字段名不同
+      this.form = Object.assign(this.form, query.reserveItem)
+      this.form.applyDepartment = Department[this.form.activityDepartment + '']
+      this.form.reserveHall = Halls[this.form.reserveHall + '']
+      this.form.activityDepartment = null
+      this.isEditPage = query.fromMyReserve
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    // ...
+    this.form = cloneDeep(presetForm)
+    this.isEditPage = false
+    // 要触发重置才行，不然要报错
+    this.resetForm()
+    next()
+  },
   methods: {
     onSubmit() {
       this.$refs['form'].validate((valid) => {
@@ -195,7 +204,12 @@ export default {
       })
     },
     resetForm() {
-      this.$refs['form'].resetFields()
+      // 这里需要根据是否是编辑状态来调整重置的效果
+      if (this.isEditPage) {
+        this.form = cloneDeep(this.query)
+      } else {
+        this.$refs['form'].resetFields()
+      }
     }
   }
 }

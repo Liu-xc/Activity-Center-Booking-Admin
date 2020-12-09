@@ -172,9 +172,7 @@ export default {
   methods: {
     parseTime,
     check(row) {
-      this.itemToHandle = row
-      // this.dialogVisible = true
-      this.$router.push()
+      this.$router.push({ name: 'editreserve', query: { reserveItem: row, fromMyReserve: true }})
     },
     exportExcel(row) {
       this.itemToHandle = row
@@ -222,8 +220,8 @@ export default {
                   'activity': null,
                   'activityType': 0,
                   'arrangeDate': null,
-                  'arrangeStart': new Date(),
-                  'arrangeEnd': new Date(),
+                  'arrangeStart': Date.now(),
+                  'arrangeEnd': Date.now(),
                   'arrangeSound': false,
                   'rehearsalDate': null,
                   'rehearsalStart': null,

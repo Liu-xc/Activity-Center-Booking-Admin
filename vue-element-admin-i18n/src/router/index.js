@@ -113,6 +113,8 @@ export const constantRoutes = [
     path: '/editreserve',
     component: Layout,
     redirect: '/editreserve/index',
+    name: 'editreserve',
+    props: true,
     children: [
       {
         path: 'index',

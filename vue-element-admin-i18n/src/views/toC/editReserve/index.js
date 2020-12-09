@@ -1,0 +1,20 @@
+export const presetForm = {
+  reserveHall: null,
+  activity: null,
+  arrangeData: null,
+  arrangeStart: null,
+  arrangeEnd: null,
+  arrangeSound: false,
+  rehearsalData: null,
+  rehearsalStart: null,
+  rehearsalEnd: null,
+  rehearsalSound: false,
+  data: null,
+  start: null,
+  end: null,
+  activityHolder: null,
+  applyDepartment: null,
+  applicant: null,
+  contact: null,
+  remarks: null
+}
