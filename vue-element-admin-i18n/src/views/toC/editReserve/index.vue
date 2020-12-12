@@ -60,9 +60,16 @@
       <el-form-item label="彩排是否需要音控" prop="rehearsalSound">
         <el-switch v-model="form.rehearsalSound" />
       </el-form-item>
-      <el-form-item label="演出日期" required prop="date">
+      <el-form-item label="演出日期" required>
         <el-col :span="6">
-          <el-date-picker v-model="form.date" type="date" placeholder="选择日期" style="width: 100%;" />
+          <el-form-item label prop="date">
+            <el-date-picker
+              v-model="form.date"
+              type="date"
+              placeholder="选择日期"
+              style="width: 100%;"
+            />
+          </el-form-item>
         </el-col>
         <el-col :span="6">
           <el-form-item label prop="start">
@@ -103,8 +110,9 @@
       </el-col>
       <el-col :span="24">
         <el-form-item>
-          <el-button type="primary" @click="onSubmit">{{ isEditPage ? '提交修改' : '立即创建' }}</el-button>
+          <el-button type="primary" @click="onSubmit">{{ this.$root.isEdit ? '提交修改' : '立即创建' }}</el-button>
           <el-button @click="resetForm">重置</el-button>
+          <el-button v-if="this.$root.isEdit" type="success" @click="resetForm(true)">新建申请</el-button>
         </el-form-item>
       </el-col>
     </el-form>
@@ -116,13 +124,14 @@ import { newApply } from '@/api/reserve'
 import { Department, Halls } from '@/utils/StaticData'
 import { cloneDeep } from 'lodash'
 import { presetForm } from './index.js'
+
 export default {
   name: 'EditReserve',
   data() {
     return {
       isEditPage: false,
       query: {},
-      form: cloneDeep(presetForm),
+      form: presetForm,
       rules: {
         reserveHall: [
           { required: true, message: '请输入要预约的会议室' }
@@ -154,30 +163,25 @@ export default {
       }
     }
   },
-  created() {
-    const query = cloneDeep(this.$route.query)
-    if (query && query.fromMyReserve) {
-      // 是从MyReserve跳转过来的
-      // 保存原始query
-      this.query = query
-      // 会议室和申请部门需要转化
-      // 注意这里字段名不同
-      this.form = Object.assign(this.form, query.reserveItem)
+  beforeRouteLeave(to, from, next) {
+    // ...
+    // 重置根组件的数据
+    // 要触发重置才行，不然要报错
+    this.resetForm(true)
+    next()
+  },
+  mounted() {
+    this.getFormFromroot()
+    this.$nextTick(() => this.$refs['form'].clearValidate())
+  },
+  methods: {
+    getFormFromroot() {
+      // 从父组件拿数据
+      this.form = cloneDeep(this.$root.editForm)
       this.form.applyDepartment = Department[this.form.activityDepartment + '']
       this.form.reserveHall = Halls[this.form.reserveHall + '']
       this.form.activityDepartment = null
-      this.isEditPage = query.fromMyReserve
-    }
-  },
-  beforeRouteLeave(to, from, next) {
-    // ...
-    this.form = cloneDeep(presetForm)
-    this.isEditPage = false
-    // 要触发重置才行，不然要报错
-    this.resetForm()
-    next()
-  },
-  methods: {
+    },
     onSubmit() {
       this.$refs['form'].validate((valid) => {
         if (valid) {
@@ -203,11 +207,13 @@ export default {
         }
       })
     },
-    resetForm() {
-      // 这里需要根据是否是编辑状态来调整重置的效果
-      if (this.isEditPage) {
-        this.form = cloneDeep(this.query)
+    resetForm(clear = false) {
+      if (!clear) {
+        this.getFormFromroot()
       } else {
+        this.$root.isEdit = false
+        this.$root.editForm = cloneDeep(presetForm)
+        this.getFormFromroot()
         this.$refs['form'].resetFields()
       }
     }

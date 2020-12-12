@@ -16,5 +16,6 @@ export const presetForm = {
   applyDepartment: null,
   applicant: null,
   contact: null,
-  remarks: null
+  remarks: null,
+  activityDepartment: null
 }

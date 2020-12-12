@@ -138,6 +138,7 @@ import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { Campuses, Halls, Department, Authority, ActivityType, ReviewStatus } from '../../../utils/StaticData'
 import { filterMyRequest, deleteApply } from '../../../api/reserve'
+import { cloneDeep } from 'lodash'
 
 export default {
   name: 'MyReverse',
@@ -172,7 +173,9 @@ export default {
   methods: {
     parseTime,
     check(row) {
-      this.$router.push({ name: 'editreserve', query: { reserveItem: row, fromMyReserve: true }})
+      this.$root.editForm = cloneDeep(row)
+      this.$root.isEdit = true
+      this.$router.push({ name: 'editreserve' })
     },
     exportExcel(row) {
       this.itemToHandle = row

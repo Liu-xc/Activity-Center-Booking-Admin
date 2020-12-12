@@ -5,6 +5,9 @@
 </template>
 
 <script>
+import { presetForm } from './views/toC/editReserve/index.js'
+import { cloneDeep } from 'lodash'
+
 export default {
   name: 'App',
   created() {
@@ -19,6 +22,8 @@ export default {
       .catch(() => {
         this.loading = false
       })
+    this.$root.editForm = cloneDeep(presetForm)
+    this.$root.isEdit = false
   }
 }
 </script>

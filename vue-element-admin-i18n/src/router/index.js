@@ -118,7 +118,7 @@ export const constantRoutes = [
     children: [
       {
         path: 'index',
-        component: () => import('@/views/toC/editReserve/index'),
+        component: () => import('@/views/toC/editReserve/index.vue'),
         name: 'EditReserve',
         meta: {
           title: '编辑预约',
