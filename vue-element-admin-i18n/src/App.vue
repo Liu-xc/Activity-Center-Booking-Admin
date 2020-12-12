@@ -14,7 +14,7 @@ export default {
     // const appid = this.$route.query.appid
     // const token = this.$route.query.token
 
-    this.$store.dispatch('user/login', { appId: 52, token: 'c76c1455-993d-4b0e-bb87-31e22d2c89a0' })
+    this.$store.dispatch('user/login', { appId: 52, token: '0d8c5f48-38ab-4ad2-80bb-8ba584cf5aaf' })
       .then(() => {
         this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
         this.loading = false

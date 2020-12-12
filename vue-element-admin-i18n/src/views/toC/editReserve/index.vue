@@ -111,8 +111,8 @@
       <el-col :span="24">
         <el-form-item>
           <el-button type="primary" @click="onSubmit">{{ this.$root.isEdit ? '提交修改' : '立即创建' }}</el-button>
-          <el-button @click="resetForm">重置</el-button>
           <el-button v-if="this.$root.isEdit" type="success" @click="resetForm(true)">新建申请</el-button>
+          <el-button @click="resetForm">重置</el-button>
         </el-form-item>
       </el-col>
     </el-form>
@@ -120,7 +120,7 @@
 </template>
 
 <script>
-import { newApply } from '@/api/reserve'
+import { newApply, updateApply } from '@/api/reserve'
 import { Department, Halls } from '@/utils/StaticData'
 import { cloneDeep } from 'lodash'
 import { presetForm } from './index.js'
@@ -185,19 +185,7 @@ export default {
     onSubmit() {
       this.$refs['form'].validate((valid) => {
         if (valid) {
-          newApply(Object.assign({}, this.form)).then(res => {
-            if (res.code * 1 === 200) {
-              this.$message({
-                message: '提交成功',
-                type: 'success'
-              })
-            }
-          }).catch(err => {
-            this.$message({
-              message: err.msg,
-              type: 'error'
-            })
-          })
+          this.sendApply()
         } else {
           this.$message({
             message: '请检查填写内容',
@@ -205,6 +193,24 @@ export default {
           })
           return false
         }
+      })
+    },
+    // 这里要根据是编辑还是新建来决定方法
+    sendApply() {
+      const fn = this.$isEdit ? updateApply : newApply
+      fn(cloneDeep(this.form)).then(res => {
+        if (res.code * 1 === 200) {
+          this.$message({
+            message: '提交成功',
+            type: 'success'
+          })
+          this.resetForm(true)
+        }
+      }).catch(err => {
+        this.$message({
+          message: err.msg,
+          type: 'error'
+        })
       })
     },
     resetForm(clear = false) {

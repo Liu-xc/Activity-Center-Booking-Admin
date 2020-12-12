@@ -3,6 +3,7 @@ import { filterParams } from '@/utils/filterParams'
 import { transParams } from '../utils/transParams'
 
 export function newApply(params) {
+  console.log('new', params)
   return request({
     url: '/Apply/AddApply',
     method: 'get',
@@ -31,10 +32,11 @@ export function filterMyRequest(params) {
 
 /* 前端传入预约申请表的各参数至后端数据库持久存储 */
 export function updateApply(params) {
+  console.log('update', params)
   return request({
     url: '/Apply/UpdateApply',
-    method: 'post',
-    data: filterParams(params)
+    method: 'get',
+    params: filterParams(transParams(params))
   })
 }
 

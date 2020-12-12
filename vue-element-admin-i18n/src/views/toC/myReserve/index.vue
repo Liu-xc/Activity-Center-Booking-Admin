@@ -109,7 +109,12 @@
       <el-table-column label="操作" align="center" width="400" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" icon="el-icon-view" @click="check(row)">编辑/查看</el-button>
-          <el-button size="mini" type="primary" icon="el-icon-upload" @click="check(row)">上传图片</el-button>
+          <el-button
+            size="mini"
+            type="primary"
+            icon="el-icon-upload"
+            @click="showUpload(row.aid)"
+          >上传图片</el-button>
           <el-button size="mini" type="primary" icon="el-icon-upload2" @click="exportExcel(row)">导出</el-button>
           <el-button size="mini" type="danger" icon="el-icon-delete" @click="deleteApply(row)">删除</el-button>
         </template>
@@ -126,9 +131,24 @@
         style="margin: 10px;"
       />
     </div>
-    <el-dialog title="提示" :visible.sync="dialogVisible" width="30%">
-      <!-- 展示itemToHandle -->
-      <div class="dialog-container" />
+    <el-dialog title="提示" :visible.sync="imgUploadPanel.show" width="30%">
+      <div class="img-upload-container">
+        <el-upload
+          class="upload-demo"
+          action="http://106.54.139.235:8090/Apply/UploadImage"
+          :on-preview="handlePreview"
+          :on-remove="handleRemove"
+          :before-remove="beforeRemove"
+          :data="{aid: imgUploadPanel.aid}"
+          headers="requestHeaders"
+          multiple
+          :limit="3"
+          :on-exceed="handleExceed"
+          :file-list="fileList"
+        >
+          <el-button size="small" type="primary">点击上传</el-button>
+        </el-upload>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -147,6 +167,10 @@ export default {
     return {
       itemToHandle: null,
       dialogVisible: false,
+      imgUploadPanel: {
+        aid: null,
+        show: false
+      },
       list: [],
       total: 100,
       listLoading: false,
@@ -167,11 +191,30 @@ export default {
       Campuses, Halls, Department, Authority, ActivityType, ReviewStatus
     }
   },
+  computed: {
+    requestHeaders() {
+      const headers = {}
+      const userinfo = this.$store.getters.userinfo
+      // let each request carry token
+      // ['X-Token'] is a custom headers key
+      // please modify it according to the actual situation
+      headers['authority'] = userinfo.authority * 1
+      headers['department'] = userinfo.department * 1
+      headers['name'] = encodeURIComponent(userinfo.name)
+      headers['uid'] = userinfo.uid * 1
+      headers['workId'] = userinfo.workId * 1
+
+      return headers
+    }
+  },
   created() {
     this.getReserveList()
   },
   methods: {
     parseTime,
+    showUpload(aid) {
+      this.imgUploadPanel.show = true
+    },
     check(row) {
       this.$root.editForm = cloneDeep(row)
       this.$root.isEdit = true
@@ -302,6 +345,18 @@ export default {
         })
         console.log(err)
       })
+    },
+    handleRemove(file, fileList) {
+      console.log(file, fileList)
+    },
+    handlePreview(file) {
+      console.log(file)
+    },
+    handleExceed(files, fileList) {
+      this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
+    },
+    beforeRemove(file, fileList) {
+      return this.$confirm(`确定移除 ${file.name}？`)
     }
   }
 }
@@ -318,5 +373,11 @@ export default {
 .pagination-container {
   display: flex;
   justify-content: center;
+}
+.img-upload-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
 }
 </style>
