@@ -82,7 +82,7 @@ export const constantRoutes = [
     children: [
       {
         path: 'index',
-        component: () => import('@/views/toC/overall/index'),
+        component: () => import('@/views/overall/index'),
         name: 'ReserveOverall',
         meta: {
           title: '预约情况',

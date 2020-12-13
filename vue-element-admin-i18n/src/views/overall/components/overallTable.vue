@@ -7,16 +7,9 @@
       </template>
     </div>
     <div class="table-body">
-      <overall-table-column hall="求实厅" :approve-list="approveList" />
-      <overall-table-column hall="求实厅" :approve-list="approveList" />
-      <overall-table-column hall="求实厅" :approve-list="approveList" />
-      <overall-table-column hall="求实厅" :approve-list="approveList" />
-      <overall-table-column hall="求实厅" :approve-list="approveList" />
-      <overall-table-column hall="求实厅" :approve-list="approveList" />
-      <overall-table-column hall="求实厅" :approve-list="approveList" />
-      <overall-table-column hall="求实厅" :approve-list="approveList" />
-      <overall-table-column hall="求实厅" :approve-list="approveList" />
-      <overall-table-column hall="求实厅" :approve-list="approveList" />
+      <template v-for="(item, index) of approveList">
+        <overall-table-column :key="index" :hall="item.reserveHall" :approve-list="item.list" />
+      </template>
     </div>
   </div>
 </template>
@@ -28,17 +21,28 @@ export default {
   components: {
     OverallTableColumn
   },
-  data() {
-    return {
-      approveList: [
-        {
-          startTime: '',
-          department: '学工部学工部学工部学工部学工部学工部学工部学工部',
-          period: [new Date(), new Date()],
-          tel: '12314'
+  props: {
+    query: {
+      type: Object,
+      default() {
+        return {
+          date: new Date(Date.now()),
+          campus: 0
         }
-      ]
+      }
+    },
+    approveList: {
+      type: Array,
+      default() {
+        return []
+      }
     }
+  },
+  data() {
+    return {}
+  },
+  mounted() {
+
   }
 }
 </script>

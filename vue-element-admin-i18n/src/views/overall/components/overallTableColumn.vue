@@ -4,21 +4,24 @@
     <template v-for="(item, idx) of approveList">
       <div :key="item.startTime" class="book-item" :style="styleList[idx]">
         <div class="book-detail-wrapper">
-          <div class="department book-detail-item" :title="item.department">
+          <div
+            class="department book-detail-item"
+            :title="Department[item.acticityDepartment + '']"
+          >
             部门：
             <br>
-            {{ item.department }}
+            {{ Department[item.acticityDepartment + ''] }}
           </div>
           <div class="period book-detail-item">
             时间：
             <br>
-            {{ item.period[0] | parseTime('{h}:{i}') }} --- {{ item.period[1] | parseTime('{h}:{i}') }}
+            {{ item.formalStart | parseTime('{h}:{i}') }} --- {{ item.formalEnd | parseTime('{h}:{i}') }}
           </div>
-          <div class="tel book-detail-item" :title="item.tel">
+          <!-- <div class="tel book-detail-item" :title="item.tel">
             联系方式：
-            <br>
+            <br />
             {{ item.tel }}
-          </div>
+          </div>-->
         </div>
       </div>
     </template>
@@ -27,6 +30,7 @@
 
 <script>
 import { parseTime } from '@/utils'
+import { Department } from '@/utils/StaticData'
 export default {
   name: 'OverallTableColumn',
   props: {
@@ -43,7 +47,7 @@ export default {
   },
   data() {
     return {
-
+      Department
     }
   },
   computed: {
@@ -51,12 +55,12 @@ export default {
       const list = []
       for (const item of this.approveList) {
         /* 在这里对时间进行判断然后构成对应的样式 */
-        const baseHour = 8
-        const start = (new Date(item.period[0])).getHours() - baseHour
-        const end = (new Date(item.period[1])).getHours() - baseHour
+        const baseHour = 6
+        const start = (new Date(item.formalStart)).getHours() - baseHour
+        const end = (new Date(item.formalEnd)).getHours() - baseHour
         const style = {
-          'grid-row-start': start - 5,
-          'grid-row-end': end - 5
+          'grid-row-start': start,
+          'grid-row-end': end + 1
         }
         list.push(style)
       }
@@ -102,6 +106,8 @@ export default {
   transition: all 0.3s;
 }
 .book-detail-wrapper:hover {
+  min-width: 100%;
+  min-height: 100%;
   height: auto;
   width: auto;
   overflow: visible;

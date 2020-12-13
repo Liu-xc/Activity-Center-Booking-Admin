@@ -139,8 +139,8 @@
           :on-preview="handlePreview"
           :on-remove="handleRemove"
           :before-remove="beforeRemove"
-          :data="{aid: imgUploadPanel.aid}"
-          headers="requestHeaders"
+          :data="Object.assign({aid: imgUploadPanel.aid}, this.$store.getters.userinfo)"
+          :headers="requestHeaders"
           multiple
           :limit="3"
           :on-exceed="handleExceed"
@@ -172,6 +172,7 @@ export default {
         show: false
       },
       list: [],
+      fileList: [],
       total: 100,
       listLoading: false,
       listQuery: {
@@ -246,96 +247,6 @@ export default {
     getReserveList() {
       filterMyRequest({ ...this.listQuery }).then(
         res => {
-          res = {
-            'data': {
-              'pageNum': 1,
-              'pageSize': 2,
-              'size': 2,
-              'startRow': 1,
-              'endRow': 2,
-              'total': 7,
-              'pages': 4,
-              'list': [
-                {
-                  'aid': 6,
-                  'uid': 1,
-                  'createTime': null,
-                  'updateTime': null,
-                  'campus': 0,
-                  'reserveHall': 0,
-                  'activity': null,
-                  'activityType': 0,
-                  'arrangeDate': null,
-                  'arrangeStart': Date.now(),
-                  'arrangeEnd': Date.now(),
-                  'arrangeSound': false,
-                  'rehearsalDate': null,
-                  'rehearsalStart': null,
-                  'rehearsalEnd': null,
-                  'rehearsalSound': false,
-                  'formalDate': null,
-                  'formalStart': null,
-                  'formalEnd': null,
-                  'remarks': null,
-                  'activityHolder': null,
-                  'activityDepartment': 0,
-                  'applicant': 'test',
-                  'contact': '1111111',
-                  'reviewStatus': 0,
-                  'reviewResponse': null,
-                  'imageUrl': null
-                },
-                {
-                  'aid': 7,
-                  'uid': 1,
-                  'createTime': null,
-                  'updateTime': null,
-                  'campus': 0,
-                  'reserveHall': 0,
-                  'activity': null,
-                  'activityType': 0,
-                  'arrangeDate': null,
-                  'arrangeStart': null,
-                  'arrangeEnd': null,
-                  'arrangeSound': false,
-                  'rehearsalDate': null,
-                  'rehearsalStart': null,
-                  'rehearsalEnd': null,
-                  'rehearsalSound': false,
-                  'formalDate': null,
-                  'formalStart': null,
-                  'formalEnd': null,
-                  'remarks': null,
-                  'activityHolder': null,
-                  'activityDepartment': 0,
-                  'applicant': 'test',
-                  'contact': '1111111',
-                  'reviewStatus': 0,
-                  'reviewResponse': null,
-                  'imageUrl': null
-                }
-              ],
-              'prePage': 0,
-              'nextPage': 2,
-              'isFirstPage': true,
-              'isLastPage': false,
-              'hasPreviousPage': false,
-              'hasNextPage': true,
-              'navigatePages': 8,
-              'navigatepageNums': [
-                1,
-                2,
-                3,
-                4
-              ],
-              'navigateFirstPage': 1,
-              'navigateLastPage': 4,
-              'firstPage': 1,
-              'lastPage': 4
-            },
-            'code': 200,
-            'msg': 'SUCCESS'
-          }
           this.list = res.data.list
         }
       ).catch(err => {
