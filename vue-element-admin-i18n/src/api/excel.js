@@ -1,10 +1,12 @@
 import request from '@/utils/request'
-import { filterParams } from '@/utils/filterParams'
+// import { filterParams } from '@/utils/filterParams'
 
-export function getExcel(query = {}) {
+export function getExcel(aid) {
   return request({
-    url: '/Approval/ExportExcel',
+    url: '/Apply/ExportExcel',
     method: 'get',
-    params: filterParams(query)
+    params: {
+      ApplyID: aid
+    }
   })
 }

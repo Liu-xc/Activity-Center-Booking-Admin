@@ -115,7 +115,12 @@
             icon="el-icon-upload"
             @click="showUpload(row.aid)"
           >上传图片</el-button>
-          <el-button size="mini" type="primary" icon="el-icon-upload2" @click="exportExcel(row)">导出</el-button>
+          <el-button
+            size="mini"
+            type="primary"
+            icon="el-icon-upload2"
+            @click="exportExcel(row.aid)"
+          >导出</el-button>
           <el-button size="mini" type="danger" icon="el-icon-delete" @click="deleteApply(row)">删除</el-button>
         </template>
       </el-table-column>
@@ -159,6 +164,7 @@ import Pagination from '@/components/Pagination' // secondary package based on e
 import { Campuses, Halls, Department, Authority, ActivityType, ReviewStatus } from '../../../utils/StaticData'
 import { filterMyRequest, deleteApply } from '../../../api/reserve'
 import { cloneDeep } from 'lodash'
+import { getExcel } from '@/api/excel'
 
 export default {
   name: 'MyReverse',
@@ -221,8 +227,10 @@ export default {
       this.$root.isEdit = true
       this.$router.push({ name: 'editreserve' })
     },
-    exportExcel(row) {
-      this.itemToHandle = row
+    exportExcel(aid) {
+      getExcel().then(res => {
+        console.log(res)
+      })
     },
     deleteApply(row) {
       this.$confirm('确认删除本次申请？').then(() => {
