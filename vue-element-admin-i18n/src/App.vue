@@ -11,10 +11,7 @@ import { cloneDeep } from 'lodash'
 export default {
   name: 'App',
   created() {
-    // const appid = this.$route.query.appid
-    // const token = this.$route.query.token
-
-    this.$store.dispatch('user/login', { appId: 52, token: '0d8c5f48-38ab-4ad2-80bb-8ba584cf5aaf' })
+    this.$store.dispatch('user/login', { appId: 52, token: '6719f8bd-ee76-4e6a-90f6-5a064cc7357b' })
       .then(() => {
         this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
         this.loading = false
@@ -24,6 +21,11 @@ export default {
       })
     this.$root.editForm = cloneDeep(presetForm)
     this.$root.isEdit = false
+  },
+  mounted() {
+    const appid = this.$route.query.appid
+    const token = this.$route.query.token
+    console.log(appid, token, this.$router)
   }
 }
 </script>

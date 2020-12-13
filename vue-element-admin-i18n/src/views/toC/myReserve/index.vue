@@ -141,6 +141,7 @@
         <el-upload
           class="upload-demo"
           action="http://106.54.139.235:8090/Apply/UploadImage"
+          ref="upload"
           :on-preview="handlePreview"
           :on-remove="handleRemove"
           :before-remove="beforeRemove"
@@ -150,9 +151,11 @@
           :limit="3"
           :on-exceed="handleExceed"
           :file-list="fileList"
+          :auto-upload="false"
         >
-          <el-button size="small" type="primary">点击上传</el-button>
+          <el-button size="small" type="primary">点击选择图片</el-button>
         </el-upload>
+        <el-button type="primary" size="small" @click="submitImg">上传</el-button>
       </div>
     </el-dialog>
   </div>
@@ -221,6 +224,7 @@ export default {
     parseTime,
     showUpload(aid) {
       this.imgUploadPanel.show = true
+      this.imgUploadPanel.aid = aid
     },
     check(row) {
       this.$root.editForm = cloneDeep(row)
@@ -228,7 +232,7 @@ export default {
       this.$router.push({ name: 'editreserve' })
     },
     exportExcel(aid) {
-      getExcel().then(res => {
+      getExcel(aid).then(res => {
         console.log(res)
       })
     },
@@ -276,6 +280,9 @@ export default {
     },
     beforeRemove(file, fileList) {
       return this.$confirm(`确定移除 ${file.name}？`)
+    },
+    submitImg() {
+      this.$refs.upload.submit()
     }
   }
 }

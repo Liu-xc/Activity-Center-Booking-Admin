@@ -3,7 +3,6 @@ import { filterParams } from '@/utils/filterParams'
 import { transParams } from '../utils/transParams'
 
 export function newApply(params) {
-  console.log('new', params)
   return request({
     url: '/Apply/AddApply',
     method: 'get',
@@ -15,8 +14,8 @@ export function newApply(params) {
 export function applyOverall(params) {
   return request({
     url: '/Apply/ApplyStatus',
-    method: 'post',
-    data: filterParams(params)
+    method: 'get',
+    params: filterParams(params)
   })
 }
 
@@ -50,11 +49,13 @@ export function deleteApply(params) {
 }
 
 /* 前端传入预约申请序号从后端导出该申请表的Excel文件 */
-export function exportExcel(params) {
+export function exportExcel(aid) {
   return request({
-    url: '/Apply/ExportExcel',
+    url: '/Apply/DownloadWord',
     method: 'get',
-    params: filterParams(params)
+    params: {
+      aid: aid
+    }
   })
 }
 
@@ -71,7 +72,7 @@ export function uploadImage(data) {
 export function deleteImage(data) {
   return request({
     url: '/Apply/DeleteImage',
-    method: 'post',
+    method: 'get',
     data
   })
 }

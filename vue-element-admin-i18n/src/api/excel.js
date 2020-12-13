@@ -3,10 +3,10 @@ import request from '@/utils/request'
 
 export function getExcel(aid) {
   return request({
-    url: '/Apply/ExportExcel',
+    url: '/Apply/DownloadWord',
     method: 'get',
     params: {
-      ApplyID: aid
+      aid: aid
     }
   })
 }

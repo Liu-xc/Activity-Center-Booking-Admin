@@ -73,7 +73,8 @@ export const constantRoutes = [
   },
   {
     path: '/',
-    component: Layout
+    component: Layout,
+    props: true
   },
   {
     path: '/overall',

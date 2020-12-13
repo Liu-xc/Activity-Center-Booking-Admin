@@ -49,7 +49,7 @@ export default {
   data() {
     return {
       listQuery: {
-        date: new Date(Date.now()),
+        date: (new Date(Date.now())),
         campus: '清水河'
         // ReserveHall: ''
       },
@@ -67,7 +67,7 @@ export default {
   methods: {
     /* 获取时间表 */
     getTimeTable() {
-      filterTimeTable({ date: (new Date()).toUTCString(), campus: 0 }).then(res => {
+      filterTimeTable({ date: this.formatDate(), campus: this.listQuery.campus }).then(res => {
         const approveList = res.data
         // 处理数据，将同一个厅同一天的放在一起
         const divide = {}
@@ -87,6 +87,9 @@ export default {
         }
         this.approveList = handledList
       })
+    },
+    formatDate() {
+      return `${this.listQuery.date.getFullYear()}/${this.listQuery.date.getMonth() + 1}/${this.listQuery.date.getDate()}`
     }
   }
 }
