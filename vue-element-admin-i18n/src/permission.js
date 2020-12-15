@@ -12,7 +12,6 @@ NProgress.configure({ showSpinner: false }) // NProgress Configuration
 // const whiteList = ['/login', '/auth-redirect'] // no redirect whitelist
 
 router.beforeEach(async(to, from, next) => {
-  console.log('permission', store.getters.token)
   const flag = store.getters.token
   const appId = 52
   const token = getUrlParams(window.location.href, 'token')

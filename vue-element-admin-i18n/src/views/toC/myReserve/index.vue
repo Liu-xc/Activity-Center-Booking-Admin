@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.activity" style="width: 200px;" placeholder="活动名称" />
+      <!-- <el-input v-model="listQuery.activity" style="width: 200px;" placeholder="活动名称" /> -->
 
       <el-select
         v-model.number="listQuery.campus"
@@ -32,7 +32,7 @@
           :value="Halls[item]"
         />
       </el-select>
-      <el-select
+      <!-- <el-select
         v-model.number="listQuery.activityType"
         placeholder="活动类别"
         clearable
@@ -45,7 +45,7 @@
           :label="ActivityType[item]"
           :value="ActivityType[item]"
         />
-      </el-select>
+      </el-select>-->
       <el-select
         v-model.number="listQuery.reviewStatus"
         placeholder="审核状态"
@@ -254,7 +254,7 @@ export default {
         })
     },
     getReserveList() {
-      filterMyRequest({ ...this.listQuery }).then(
+      filterMyRequest(cloneDeep(this.listQuery)).then(
         res => {
           this.list = res.data.list
         }

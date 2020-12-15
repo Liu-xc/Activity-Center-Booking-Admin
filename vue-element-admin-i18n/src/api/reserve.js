@@ -22,10 +22,11 @@ export function applyOverall(params) {
 /* 通过前端传入的过滤条件返回查询到符合条件的登录用户的预约情况 */
 export function filterMyRequest(params) {
   /* 将数据转换（校区、审核状态、活动类别、厅） */
+  console.log(transParams(filterParams(params)))
   return request({
     url: 'Apply/ApplyStatusFilter',
     method: 'get',
-    params: filterParams(transParams(params))
+    params: transParams(filterParams(params))
   })
 }
 

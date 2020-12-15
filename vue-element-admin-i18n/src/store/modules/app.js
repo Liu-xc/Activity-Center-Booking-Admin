@@ -42,7 +42,6 @@ const mutations = {
     Cookies.set('size', size)
   },
   SET_META: (state, { appId, token }) => {
-    console.log('store', appId, token)
     state.meta.appId = state.meta.appId || appId
     state.meta.token = state.meta.token || token
   }

@@ -35,7 +35,7 @@ export function transParams(params) {
   }
   if (params.reserveHall !== '') {
     for (const item in Halls) {
-      if (Halls[item] === params.reserveHall) {
+      if (Halls[item] === params.reserveHall + '') {
         params.reserveHall = item * 1
         break
       }
