@@ -5,27 +5,30 @@
 </template>
 
 <script>
-import { presetForm } from './views/toC/editReserve/index.js'
-import { cloneDeep } from 'lodash'
+import { getUrlParams } from '@/utils/getURLParams'
+
+let loginTimes = 1
 
 export default {
   name: 'App',
   created() {
-    this.$store.dispatch('user/login', { appId: 52, token: '6719f8bd-ee76-4e6a-90f6-5a064cc7357b' })
-      .then(() => {
-        this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
-        this.loading = false
-      })
-      .catch(() => {
-        this.loading = false
-      })
-    this.$root.editForm = cloneDeep(presetForm)
-    this.$root.isEdit = false
+
+    // this.$router.push({ path: `/Login?appId=${appId}&token=${token}` })
+    // this.loading = false
   },
   mounted() {
-    const appid = this.$route.query.appid
-    const token = this.$route.query.token
-    console.log(appid, token, this.$router)
+    const appId = 52
+    const token = getUrlParams(window.location.href, 'token')
+    if (loginTimes--) {
+      this.$store.dispatch('user/login', { appId: appId, token: token })
+        .then(() => {
+          this.$router.push({ path: '/overall' })
+          this.loading = false
+        })
+        .catch(() => {
+          this.loading = false
+        })
+    }
   }
 }
 </script>

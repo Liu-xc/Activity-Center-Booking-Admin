@@ -5,14 +5,24 @@ import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
 // import { getToken } from '@/utils/auth' // get token from cookie
 import getPageTitle from '@/utils/get-page-title'
+import { getUrlParams } from '@/utils/getURLParams'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
 // const whiteList = ['/login', '/auth-redirect'] // no redirect whitelist
 
 router.beforeEach(async(to, from, next) => {
+  console.log('permission', store.getters.token)
+  const flag = store.getters.token
+  const appId = 52
+  const token = getUrlParams(window.location.href, 'token')
+  await store.commit('app/SET_META', { appId, token })
   // start progress bar
   NProgress.start()
+
+  if (to.path === '/Login' && flag) {
+    next({ path: '/', query: { appId, token }})
+  }
 
   // set page title
   document.title = getPageTitle(to.meta.title)
@@ -38,7 +48,10 @@ router.beforeEach(async(to, from, next) => {
       // Message.error(error || 'Has Error')
       console.log(error)
       NProgress.done()
+      next()
     }
+  } else {
+    next()
   }
   // if (hasToken) {
   //   if (to.path === '/login') {

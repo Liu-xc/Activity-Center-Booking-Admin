@@ -36,7 +36,7 @@ export const asyncRoutes = [
         path: 'index',
         component: () => import('@/views/table/complex-table'),
         name: 'ComplexTable',
-        meta: { title: '预约管理', icon: 'el-icon-s-check', affix: true }
+        meta: { title: '预约管理', icon: 'el-icon-s-check', affix: false }
       }
     ],
     meta: { roles: 1 }
@@ -72,9 +72,12 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/Login',
+    component: () => import('@/views/login')
+  },
+  {
     path: '/',
-    component: Layout,
-    props: true
+    component: Layout
   },
   {
     path: '/overall',
@@ -88,7 +91,7 @@ export const constantRoutes = [
         meta: {
           title: '预约情况',
           icon: 'el-icon-view',
-          affix: false
+          affix: true
         }
       }
     ]
@@ -105,7 +108,7 @@ export const constantRoutes = [
         meta: {
           title: '我的预约',
           icon: 'el-icon-s-claim',
-          affix: false
+          affix: true
         }
       }
     ]

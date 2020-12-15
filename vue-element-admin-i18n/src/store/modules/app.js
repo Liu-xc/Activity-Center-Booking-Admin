@@ -8,7 +8,11 @@ const state = {
   },
   device: 'desktop',
   language: getLanguage(),
-  size: Cookies.get('size') || 'medium'
+  size: Cookies.get('size') || 'medium',
+  meta: {
+    appId: null,
+    token: null
+  }
 }
 
 const mutations = {
@@ -36,6 +40,11 @@ const mutations = {
   SET_SIZE: (state, size) => {
     state.size = size
     Cookies.set('size', size)
+  },
+  SET_META: (state, { appId, token }) => {
+    console.log('store', appId, token)
+    state.meta.appId = state.meta.appId || appId
+    state.meta.token = state.meta.token || token
   }
 }
 

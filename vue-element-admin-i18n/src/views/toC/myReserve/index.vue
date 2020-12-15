@@ -100,9 +100,7 @@
       </el-table-column>
       <el-table-column label="审核备注" width="300px" align="center">
         <template slot-scope="{row}">
-          <div
-            class="review-response"
-          >{{ row.reviewResponse + 'dassssssssssssssssssssssssssssssssssssssssssssssssss' }}</div>
+          <div class="review-response">{{ row.reviewResponse }}</div>
         </template>
       </el-table-column>
 
@@ -115,12 +113,9 @@
             icon="el-icon-upload"
             @click="showUpload(row.aid)"
           >上传图片</el-button>
-          <el-button
-            size="mini"
-            type="primary"
-            icon="el-icon-upload2"
-            @click="exportExcel(row.aid)"
-          >导出</el-button>
+          <el-button size="mini" type="primary" icon="el-icon-upload2">
+            <a download :href="`${BaseUrl}${row.aid}`">导出</a>
+          </el-button>
           <el-button size="mini" type="danger" icon="el-icon-delete" @click="deleteApply(row)">删除</el-button>
         </template>
       </el-table-column>
@@ -139,9 +134,9 @@
     <el-dialog title="提示" :visible.sync="imgUploadPanel.show" width="30%">
       <div class="img-upload-container">
         <el-upload
+          ref="upload"
           class="upload-demo"
           action="http://106.54.139.235:8090/Apply/UploadImage"
-          ref="upload"
           :on-preview="handlePreview"
           :on-remove="handleRemove"
           :before-remove="beforeRemove"
@@ -174,6 +169,7 @@ export default {
   components: { Pagination },
   data() {
     return {
+      BaseUrl: 'http://106.54.139.235:8090/Apply/DownloadWord/?aid=',
       itemToHandle: null,
       dialogVisible: false,
       imgUploadPanel: {
@@ -247,6 +243,7 @@ export default {
             message: '删除成功',
             type: 'success'
           })
+          this.getReserveList()
         }
       })
         .catch(err => {
