@@ -11,10 +11,10 @@
           <el-input v-model="form.activity" />
         </el-col>
       </el-form-item>
-      <el-form-item label="布场日期" prop="arrangeData">
+      <el-form-item label="布场日期" prop="arrangeDate">
         <el-col :span="6">
           <el-date-picker
-            v-model="form.arrangeData"
+            v-model="form.arrangeDate"
             type="date"
             placeholder="选择日期"
             style="width: 100%;"
@@ -37,10 +37,10 @@
       <!-- <el-form-item label="是否外来公司布场">
         <el-switch v-model="form.delivery" />
       </el-form-item>-->
-      <el-form-item label="彩排日期" prop="rehearsalData">
+      <el-form-item label="彩排日期" prop="rehearsalDate">
         <el-col :span="6">
           <el-date-picker
-            v-model="form.rehearsalData"
+            v-model="form.rehearsalDate"
             type="date"
             placeholder="选择日期"
             style="width: 100%;"
@@ -64,7 +64,7 @@
         <el-col :span="6">
           <el-form-item label prop="date">
             <el-date-picker
-              v-model="form.date"
+              v-model="form.formalDate"
               type="date"
               placeholder="选择日期"
               style="width: 100%;"
@@ -73,12 +73,12 @@
         </el-col>
         <el-col :span="6">
           <el-form-item label prop="start">
-            <el-time-picker v-model="form.start" placeholder="开始时间" style="width: 100%;" />
+            <el-time-picker v-model="form.formalStart" placeholder="开始时间" style="width: 100%;" />
           </el-form-item>
         </el-col>
         <el-col :span="6">
           <el-form-item label prop="end">
-            <el-time-picker v-model="form.end" placeholder="结束时间" style="width: 100%;" />
+            <el-time-picker v-model="form.formalEnd" placeholder="结束时间" style="width: 100%;" />
           </el-form-item>
         </el-col>
       </el-form-item>
@@ -131,7 +131,27 @@ export default {
     return {
       isEditPage: false,
       query: {},
-      form: presetForm,
+      form: {
+        reserveHall: '',
+        activity: '',
+        arrangeDate: '',
+        arrangeStart: '',
+        arrangeEnd: '',
+        arrangeSound: false,
+        rehearsalDate: '',
+        rehearsalStart: '',
+        rehearsalEnd: '',
+        rehearsalSound: '',
+        formalDate: '',
+        formalStart: '',
+        formalEnd: '',
+        activityHolder: '',
+        applyDepartment: '',
+        applicant: '',
+        contact: '',
+        remarks: '',
+        activityDepartment: ''
+      },
       rules: {
         reserveHall: [
           { required: true, message: '请输入要预约的会议室' }
@@ -139,13 +159,13 @@ export default {
         activity: [
           { required: true, message: '请输入活动名称' }
         ],
-        date: [
+        formalDate: [
           { required: true, message: '请输入活动日期' }
         ],
-        start: [
+        formalStart: [
           { required: true, message: '请输入活动开始时间' }
         ],
-        end: [
+        formalEnd: [
           { required: true, message: '请输入活动结束时间' }
         ],
         activityHolder: [
@@ -170,9 +190,9 @@ export default {
     this.resetForm(true)
     next()
   },
-  mounted() {
-    this.getFormFromroot()
-    this.$nextTick(() => this.$refs['form'].clearValidate())
+  created() {
+    this.$root.isEdit && this.getFormFromroot()
+    this.$root.isEdit && this.$nextTick(() => this.$refs['form'].clearValidate())
   },
   methods: {
     getFormFromroot() {
@@ -183,9 +203,10 @@ export default {
       this.form.activityDepartment = null
     },
     onSubmit() {
+      console.log(this.form)
       this.$refs['form'].validate((valid) => {
         if (valid) {
-          this.sendApply()
+          this.sendApply(cloneDeep(this.form))
         } else {
           this.$message({
             message: '请检查填写内容',
@@ -196,9 +217,10 @@ export default {
       })
     },
     // 这里要根据是编辑还是新建来决定方法
-    sendApply() {
-      const fn = this.$isEdit ? updateApply : newApply
-      fn(cloneDeep(this.form)).then(res => {
+    sendApply(params) {
+      console.log('form', params)
+      const fn = this.$root.isEdit ? updateApply : newApply
+      fn(cloneDeep(params)).then(res => {
         if (res.code * 1 === 200) {
           this.$message({
             message: '提交成功',

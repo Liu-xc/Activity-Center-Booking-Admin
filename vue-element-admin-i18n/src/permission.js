@@ -12,15 +12,27 @@ NProgress.configure({ showSpinner: false }) // NProgress Configuration
 // const whiteList = ['/login', '/auth-redirect'] // no redirect whitelist
 
 router.beforeEach(async(to, from, next) => {
-  const flag = store.getters.token
+  const flag = sessionStorage.getItem('token')
   const appId = 52
-  const token = getUrlParams(window.location.href, 'token')
+  const token = sessionStorage.getItem('token') || getUrlParams(window.location.href, 'token')
+  if (!flag && token) {
+    sessionStorage.setItem('token', token)
+  }
   await store.commit('app/SET_META', { appId, token })
   // start progress bar
   NProgress.start()
 
-  if (to.path === '/Login' && flag) {
+  if (to.path === '/Login' && !flag) {
     next({ path: '/', query: { appId, token }})
+  }
+
+  if (!store.getters.userinfo.name) {
+    store.dispatch('user/login', { appId: 52, token: sessionStorage.getItem('token') })
+      .then(() => {
+        router.push({ path: '/overall' })
+      })
+      .catch(() => {
+      })
   }
 
   // set page title

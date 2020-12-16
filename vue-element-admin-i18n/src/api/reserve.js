@@ -1,12 +1,11 @@
 import request from '@/utils/request'
-import { filterParams } from '@/utils/filterParams'
-import { transParams } from '../utils/transParams'
+import formatParams from '@/utils/formatParams'
 
 export function newApply(params) {
   return request({
     url: '/Apply/AddApply',
     method: 'get',
-    params: filterParams(transParams(params))
+    params: formatParams(params)
   })
 }
 
@@ -15,28 +14,27 @@ export function applyOverall(params) {
   return request({
     url: '/Apply/ApplyStatus',
     method: 'get',
-    params: filterParams(params)
+    params: formatParams(params)
   })
 }
 
 /* 通过前端传入的过滤条件返回查询到符合条件的登录用户的预约情况 */
 export function filterMyRequest(params) {
   /* 将数据转换（校区、审核状态、活动类别、厅） */
-  console.log(transParams(filterParams(params)))
+  // console.log(transParams(filterParams(params)))
   return request({
     url: 'Apply/ApplyStatusFilter',
     method: 'get',
-    params: transParams(filterParams(params))
+    params: formatParams(params)
   })
 }
 
 /* 前端传入预约申请表的各参数至后端数据库持久存储 */
 export function updateApply(params) {
-  console.log('update', params)
   return request({
     url: '/Apply/UpdateApply',
     method: 'get',
-    params: filterParams(transParams(params))
+    params: formatParams(params)
   })
 }
 
@@ -45,7 +43,7 @@ export function deleteApply(params) {
   return request({
     url: '/Apply/DeleteApply',
     method: 'get',
-    params: filterParams(params)
+    params: formatParams(params)
   })
 }
 

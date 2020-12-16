@@ -21,7 +21,7 @@ export default {
   },
   mounted() {
     const appId = 52
-    const token = getUrlParams(window.location.href, 'token') || this.$store.getters.token
+    const token = getUrlParams(window.location.href, 'token') || sessionStorage.getItem('token')
     if (loginTimes--) {
       this.$store.dispatch('user/login', { appId: appId, token: token })
         .then(() => {

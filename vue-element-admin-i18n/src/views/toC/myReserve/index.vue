@@ -223,6 +223,7 @@ export default {
       this.imgUploadPanel.aid = aid
     },
     check(row) {
+      console.log(row)
       this.$root.editForm = cloneDeep(row)
       this.$root.isEdit = true
       this.$router.push({ name: 'editreserve' })
@@ -257,6 +258,7 @@ export default {
       filterMyRequest(cloneDeep(this.listQuery)).then(
         res => {
           this.list = res.data.list
+          this.total = res.data.total
         }
       ).catch(err => {
         this.$message({
