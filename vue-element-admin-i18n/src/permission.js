@@ -11,30 +11,52 @@ router.beforeEach(async(to, from, next) => {
   const flag = !!sessionStorage.getItem('token')
   const appId = sessionStorage.getItem('appId') || getUrlParams(window.location.href, 'appId') || 52
   const token = sessionStorage.getItem('token') || getUrlParams(window.location.href, 'token')
-
   NProgress.start()
-
-  if (!flag && token && appId) {
+  if (flag) {
+    const roles = (await store.getters.userinfo.authority) || sessionStorage.getItem('authority')
+    const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
+    resetRouter(router)
+    router.addRoutes(accessRoutes)
+  }
+  if (!store.getters.userinfo.uid) {
+    console.log('case1')
+    const appId = getUrlParams(window.location.href, 'appId') || sessionStorage.getItem('appId') || 52
+    const token = getUrlParams(window.location.href, 'token') || sessionStorage.getItem('token')
+    await store.dispatch('user/login', { appId: appId, token: token })
+      .then(() => {
+        const path = to.path === '/' ? '/overall' : to.path
+        router.push({ path: path })
+      })
+      .catch(() => {
+      })
+    window.onbeforeunload = async e => { // 刷新时弹出提示
+      return ''
+    }
+  } else if (!flag && token && appId) {
+    console.log('case2')
     sessionStorage.setItem('token', token)
     sessionStorage.setItem('appId', appId)
     next({ path: '/', query: { appId, token }})
   } else if (flag && token && appId) {
+    console.log('case3')
     document.title = getPageTitle(to.meta.title)
-
     if (flag) {
       try {
-        const roles = (await store.getters.userinfo.authority) || sessionStorage.getItem('authority')
-        const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
-        resetRouter(router)
-        router.addRoutes(accessRoutes)
-        console.log(to, from, store.getters.userinfo)
-        next()
+        const rootRoute = to.path === '/' && from.path === '/'
+        if (rootRoute) {
+          router.push({ path: '/overall' })
+        } else {
+          next()
+        }
       } catch (error) {
         console.log(error)
         next()
         NProgress.done()
       }
     }
+  } else {
+    console.log('case4')
+    next()
   }
 })
 
