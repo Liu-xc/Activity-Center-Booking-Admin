@@ -98,7 +98,6 @@ export default {
           item.style = this.getStyle(item)
         }
       }
-      console.log('handledList', this.handledList)
       return list
     }
   },
