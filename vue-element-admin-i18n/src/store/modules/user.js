@@ -28,11 +28,9 @@ const actions = {
   login({ commit }, data) {
     return new Promise((resolve, reject) => {
       login(data).then(response => {
+        sessionStorage.setItem('authority', response.data.authority)
         const { data } = response
         commit('SET_USERINFO', data)
-        // commit('SET_TOKEN', data.token)
-        // setToken(data.token)
-        // console.log(data)
         resolve()
       }).catch(error => {
         reject(error)

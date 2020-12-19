@@ -89,8 +89,8 @@
         </el-form-item>
       </el-col>
       <el-col :span="10">
-        <el-form-item label="申请部门" required prop="applyDepartment">
-          <el-input v-model="form.applyDepartment" />
+        <el-form-item label="申请部门" required prop="activityDepartment">
+          <el-input v-model="form.activityDepartment" />
         </el-form-item>
       </el-col>
       <el-col :span="10">
@@ -112,7 +112,7 @@
         <el-form-item>
           <el-button type="primary" @click="onSubmit">{{ this.$root.isEdit ? '提交修改' : '立即创建' }}</el-button>
           <el-button v-if="this.$root.isEdit" type="success" @click="resetForm(true)">新建申请</el-button>
-          <el-button @click="resetForm">重置</el-button>
+          <el-button @click="resetForm(false)">重置</el-button>
         </el-form-item>
       </el-col>
     </el-form>
@@ -141,7 +141,7 @@ export default {
         rehearsalDate: '',
         rehearsalStart: '',
         rehearsalEnd: '',
-        rehearsalSound: '',
+        rehearsalSound: false,
         formalDate: '',
         formalStart: '',
         formalEnd: '',
@@ -171,7 +171,7 @@ export default {
         activityHolder: [
           { required: true, message: '请输入活动负责人' }
         ],
-        applyDepartment: [
+        activityDepartment: [
           { required: true, message: '请输入申请部门' }
         ],
         applicant: [
@@ -198,12 +198,10 @@ export default {
     getFormFromroot() {
       // 从父组件拿数据
       this.form = cloneDeep(this.$root.editForm)
-      this.form.applyDepartment = Department[this.form.activityDepartment + '']
       this.form.reserveHall = Halls[this.form.reserveHall + '']
-      this.form.activityDepartment = null
+      this.form.activityDepartment = Department[this.form.activityDepartment + '']
     },
     onSubmit() {
-      console.log(this.form)
       this.$refs['form'].validate((valid) => {
         if (valid) {
           this.sendApply(cloneDeep(this.form))
@@ -218,7 +216,6 @@ export default {
     },
     // 这里要根据是编辑还是新建来决定方法
     sendApply(params) {
-      console.log('form', params)
       const fn = this.$root.isEdit ? updateApply : newApply
       fn(cloneDeep(params)).then(res => {
         if (res.code * 1 === 200) {
@@ -236,8 +233,9 @@ export default {
       })
     },
     resetForm(clear = false) {
-      if (!clear) {
+      if (!clear && this.$root.isEdit) {
         this.getFormFromroot()
+        this.$refs['form'].resetFields()
       } else {
         this.$root.isEdit = false
         this.$root.editForm = cloneDeep(presetForm)

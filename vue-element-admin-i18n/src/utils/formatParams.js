@@ -69,6 +69,32 @@ function transParams(params) {
 
 function dateToTimestamp(params) {
   const specialList = ['date', 'arrangeDate', 'formalDate', 'rehearsalDate']
+  let date = ''
+  let arrangeDate = ''
+  let formalDate = ''
+  let rehearsalDate = ''
+
+  if (params['date']) {
+    date = parseTime(params['date'], '{y}-{m}-{d}')
+    params['start'] = date + ' ' + parseTime(params['start'], '{h}:{i}:{s}')
+    params['end'] = date + ' ' + parseTime(params['end'], '{h}:{i}:{s}')
+  }
+  if (params['arrangeDate']) {
+    arrangeDate = parseTime(params['arrangeDate'], '{y}-{m}-{d}')
+    params['arrangeStart'] = arrangeDate + ' ' + parseTime(params['arrangeStart'], '{h}:{i}:{s}')
+    params['arrangeEnd'] = arrangeDate + ' ' + parseTime(params['arrangeEnd'], '{h}:{i}:{s}')
+  }
+  if (params['formalDate']) {
+    formalDate = parseTime(params['formalDate'], '{y}-{m}-{d}')
+    params['formalStart'] = formalDate + ' ' + parseTime(params['formalStart'], '{h}:{i}:{s}')
+    params['formalEnd'] = formalDate + ' ' + parseTime(params['formalEnd'], '{h}:{i}:{s}')
+  }
+  if (params['rehearsalDate']) {
+    rehearsalDate = parseTime(params['rehearsalDate'], '{y}-{m}-{d}')
+    params['rehearsalStart'] = rehearsalDate + ' ' + parseTime(params['rehearsalStart'], '{h}:{i}:{s}')
+    params['rehearsalEnd'] = rehearsalDate + ' ' + parseTime(params['rehearsalEnd'], '{h}:{i}:{s}')
+  }
+
   for (const key of Object.keys(params)) {
     if (specialList.indexOf(key) !== -1) {
       params[key] = parseTime(params[key], '{y}/{m}/{d}')

@@ -32,20 +32,6 @@
           :value="Halls[item]"
         />
       </el-select>
-      <!-- <el-select
-        v-model.number="listQuery.activityType"
-        placeholder="活动类别"
-        clearable
-        class="filter-item"
-        style="width: 200px"
-      >
-        <el-option
-          v-for="item in Object.keys(ActivityType)"
-          :key="item"
-          :label="ActivityType[item]"
-          :value="ActivityType[item]"
-        />
-      </el-select>-->
       <el-select
         v-model.number="listQuery.reviewStatus"
         placeholder="审核状态"
@@ -131,26 +117,30 @@
         style="margin: 10px;"
       />
     </div>
-    <el-dialog title="提示" :visible.sync="imgUploadPanel.show" width="30%">
+    <el-dialog title="上传图片" :visible.sync="imgUploadPanel.show" width="30%">
       <div class="img-upload-container">
-        <el-upload
-          ref="upload"
-          class="upload-demo"
-          action="http://106.54.139.235:8090/Apply/UploadImage"
-          :on-preview="handlePreview"
-          :on-remove="handleRemove"
-          :before-remove="beforeRemove"
-          :data="Object.assign({aid: imgUploadPanel.aid}, this.$store.getters.userinfo)"
-          :headers="requestHeaders"
-          multiple
-          :limit="3"
-          :on-exceed="handleExceed"
-          :file-list="fileList"
-          :auto-upload="false"
-        >
-          <el-button size="small" type="primary">点击选择图片</el-button>
-        </el-upload>
-        <el-button type="primary" size="small" @click="submitImg">上传</el-button>
+        <div class="img-picker">
+          <el-upload
+            ref="upload"
+            class="upload-demo"
+            action="http://106.54.139.235:8090/Apply/UploadImage"
+            :on-preview="handlePreview"
+            :on-remove="handleRemove"
+            :before-remove="beforeRemove"
+            :data="Object.assign({aid: imgUploadPanel.aid}, this.$store.getters.userinfo)"
+            :headers="requestHeaders"
+            multiple
+            :limit="3"
+            :on-exceed="handleExceed"
+            :file-list="fileList"
+            :auto-upload="false"
+          >
+            <el-button size="small" type="primary">点击选择图片</el-button>
+          </el-upload>
+        </div>
+        <div style="margin-top: 15px">
+          <el-button type="primary" size="small" @click="submitImg">上传</el-button>
+        </div>
       </div>
     </el-dialog>
   </div>
@@ -223,14 +213,12 @@ export default {
       this.imgUploadPanel.aid = aid
     },
     check(row) {
-      console.log(row)
       this.$root.editForm = cloneDeep(row)
       this.$root.isEdit = true
       this.$router.push({ name: 'editreserve' })
     },
     exportExcel(aid) {
       getExcel(aid).then(res => {
-        console.log(res)
       })
     },
     deleteApply(row) {
@@ -238,7 +226,6 @@ export default {
         // 执行删除的业务
         return deleteApply({ aid: row.aid })
       }).then(res => {
-        console.log(res)
         if (res.code * 1 === 200) {
           this.$message({
             message: '删除成功',
@@ -269,10 +256,8 @@ export default {
       })
     },
     handleRemove(file, fileList) {
-      console.log(file, fileList)
     },
     handlePreview(file) {
-      console.log(file)
     },
     handleExceed(files, fileList) {
       this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
@@ -304,5 +289,11 @@ export default {
   justify-content: center;
   align-items: center;
   padding: 15px;
+  flex-direction: column;
+}
+.img-picker {
+  display: flex;
+  justify-content: center;
+  text-align: center;
 }
 </style>

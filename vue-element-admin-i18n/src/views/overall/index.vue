@@ -12,16 +12,7 @@
       >
         <el-option v-for="item in Campuses" :key="item" :label="Campuses[item]" :value="item" />
       </el-select>
-      <!-- <el-select
-        v-model="listQuery.ReserveHall"
-        placeholder="场地"
-        clearable
-        class="filter-item"
-        style="width: 200px"
-        @input="_handleFilter"
-      >
-        <el-option v-for="item in halls || Halls" :key="item" :label="item" :value="item" />
-      </el-select>-->
+
       <el-button
         style="height: 35px;"
         type="primary"

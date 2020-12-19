@@ -6,22 +6,17 @@
         <div class="book-detail-wrapper">
           <div
             class="department book-detail-item"
-            :title="Department[item.acticityDepartment + '']"
+            :title="Department[item.activityDepartment + '']"
           >
             部门：
             <br>
-            {{ Department[item.acticityDepartment + ''] }}
+            {{ Department[item.activityDepartment + ''] }}
           </div>
           <div class="period book-detail-item">
             时间：
             <br>
             {{ item.formalStart | parseTime('{h}:{i}') }} --- {{ item.formalEnd | parseTime('{h}:{i}') }}
           </div>
-          <!-- <div class="tel book-detail-item" :title="item.tel">
-            联系方式：
-            <br />
-            {{ item.tel }}
-          </div>-->
         </div>
       </div>
     </template>
@@ -55,12 +50,14 @@ export default {
       const list = []
       for (const item of this.approveList) {
         /* 在这里对时间进行判断然后构成对应的样式 */
-        const baseHour = 6
-        const start = (new Date(item.formalStart)).getHours() - baseHour
-        const end = (new Date(item.formalEnd)).getHours() - baseHour
+        const baseHour = 7
+        const startHour = (new Date(item.formalStart)).getHours()
+        const endHour = (new Date(item.formalEnd)).getHours()
+        const start = startHour - baseHour
+        const end = endHour - baseHour
         const style = {
           'grid-row-start': start,
-          'grid-row-end': end + 1
+          'grid-row-end': end
         }
         list.push(style)
       }

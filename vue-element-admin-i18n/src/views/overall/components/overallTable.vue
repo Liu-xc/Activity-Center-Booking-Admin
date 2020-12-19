@@ -2,8 +2,8 @@
   <div class="overall-table">
     <div class="time-line">
       <div>时间</div>
-      <template v-for="i in 14">
-        <div :key="i">{{ (i + 7 + ':00').padStart(5, '0') }}</div>
+      <template v-for="i in 17">
+        <div :key="i">{{ (i + 6 + ':00').padStart(5, '0') }}</div>
       </template>
     </div>
     <div class="table-body">
@@ -40,9 +40,6 @@ export default {
   },
   data() {
     return {}
-  },
-  mounted() {
-
   }
 }
 </script>
@@ -58,7 +55,7 @@ export default {
 }
 .time-line {
   display: grid;
-  grid-template-rows: repeat(15, 1fr);
+  grid-template-rows: repeat(18, 1fr);
   position: sticky;
   left: 0;
   background-color: white;

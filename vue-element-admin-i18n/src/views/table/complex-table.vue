@@ -92,7 +92,7 @@
       <!-- 申请部门 -->
       <el-table-column label="申请部门" width="230px" align="center">
         <template slot-scope="{row}">
-          <span>{{ Department[row.uid + ''] }}</span>
+          <span>{{ Department[row.activityDepartment + ''] }}</span>
         </template>
       </el-table-column>
       <!-- 使用时间段 -->
@@ -123,13 +123,9 @@
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="checkDetail(row)">详情</el-button>
           <el-button size="mini" type="success" @click="audit(row)">审核</el-button>
-          <el-button
-            class="filter-item"
-            type="primary"
-            size="mini"
-            icon="el-icon-download"
-            @click="handleDownload(row)"
-          >{{ $t('table.export') }}</el-button>
+          <el-button size="mini" type="primary" icon="el-icon-upload2">
+            <a download :href="`${BaseUrl}${row.aid}`">导出</a>
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -147,7 +143,13 @@
 
     <el-dialog title="详情" :visible.sync="dialogFormVisible">
       <div v-if="imgToCheck">
-        <el-image :preview-src="imgToCheck" class="detail-img" fit="contain" :src="imgToCheck" alt>
+        <el-image
+          :preview-src="imgToCheck"
+          class="detail-img"
+          fit="contain"
+          :src="`http://106.54.139.235:8090${imgToCheck}`"
+          alt
+        >
           <div slot="error" class="image-slot">
             <i class="el-icon-picture-outline" />
           </div>
@@ -168,7 +170,7 @@
           />
         </el-form-item>
         <el-form-item label="申请部门">
-          <el-input v-model="Department[itemToAudit.uid + '']" disabled />
+          <el-input v-model="Department[itemToAudit.activityDepartment + '']" disabled />
         </el-form-item>
         <el-form-item label="活动名称">
           <el-input v-model="itemToAudit.activity" disabled />
@@ -239,10 +241,8 @@
 // import { fetchList } from '@/api/article'
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-// import { ErrorCodes } from '../../utils/errorCodes'
 import { Campuses, Halls, Department, Authority, ActivityType, ReviewStatus } from '../../utils/StaticData'
 import { handleFilter } from '../../utils/formHandlers'
-// import { approve } from '../../api/approve'
 import { approve, filterApprove } from '../../api/approve'
 import { getExcel } from '@/api/excel'
 
@@ -251,6 +251,7 @@ export default {
   components: { Pagination },
   data() {
     return {
+      BaseUrl: 'http://106.54.139.235:8090/Apply/DownloadWord/?aid=',
       auditListLen: 1, // 要审核的列表长度
       conflictList: [], // 冲突列表
       checkedList: [], // 选中的列表项
@@ -298,14 +299,6 @@ export default {
       // 点击审核时获取对应的数据项，应该现在数据库中查找是否有与之冲突的项
       this.auditChecked = false
       this.auditDialogVisible = true
-      // if (row.conflict.isConflict) {
-      //   // 冲突了
-      //   this.getConflictList().then(list => {
-      //     this.auditListLen = list.length
-      //     this.conflictList = list
-      //     this.itemToAudit = list[0]
-      //   })
-      // } else {
       this.auditListLen = 1
       this.conflictList = []
       this.itemToAudit = row
@@ -339,15 +332,9 @@ export default {
     _handleFilter() {
       handleFilter(this, this.getList)
     },
-    // getConflictList (row) {
-    //   // 获取参数（ReserveHall，requestPeriod）
-    //   // 携带参数发送请求获取冲突数组
-    //   return Promise.resolve(this.list.slice(3, 6))
-    // },
     /* 将行元素设置为待导出的对象 */
     handleDownload(row) {
       getExcel(row.id).then(res => {
-        console.log(res)
       })
     },
     formatJson(filterVal) {
