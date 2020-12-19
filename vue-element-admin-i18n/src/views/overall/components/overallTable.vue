@@ -8,7 +8,12 @@
     </div>
     <div class="table-body">
       <template v-for="(item, index) of approveList">
-        <overall-table-column :key="index" :hall="item.reserveHall" :approve-list="item.list" />
+        <overall-table-column
+          :key="index"
+          :date="query.date"
+          :hall="item.reserveHall"
+          :approve-list="item.list"
+        />
       </template>
     </div>
   </div>
@@ -33,13 +38,13 @@ export default {
     },
     approveList: {
       type: Array,
-      default() {
+      default: () => {
         return []
       }
     }
   },
-  data() {
-    return {}
+  beforeUpdate() {
+    console.log('approveList', this.approveList)
   }
 }
 </script>

@@ -19,7 +19,6 @@ router.beforeEach(async(to, from, next) => {
     router.addRoutes(accessRoutes)
   }
   if (!store.getters.userinfo.uid) {
-    console.log('case1')
     const appId = getUrlParams(window.location.href, 'appId') || sessionStorage.getItem('appId') || 52
     const token = getUrlParams(window.location.href, 'token') || sessionStorage.getItem('token')
     await store.dispatch('user/login', { appId: appId, token: token })
@@ -33,12 +32,10 @@ router.beforeEach(async(to, from, next) => {
       return ''
     }
   } else if (!flag && token && appId) {
-    console.log('case2')
     sessionStorage.setItem('token', token)
     sessionStorage.setItem('appId', appId)
     next({ path: '/', query: { appId, token }})
   } else if (flag && token && appId) {
-    console.log('case3')
     document.title = getPageTitle(to.meta.title)
     if (flag) {
       try {
@@ -55,7 +52,6 @@ router.beforeEach(async(to, from, next) => {
       }
     }
   } else {
-    console.log('case4')
     next()
   }
 })

@@ -42,7 +42,6 @@ export default {
       listQuery: {
         date: (new Date(Date.now())),
         campus: '清水河'
-        // ReserveHall: ''
       },
       Campuses,
       Halls,
@@ -57,8 +56,8 @@ export default {
   },
   methods: {
     /* 获取时间表 */
-    getTimeTable() {
-      filterTimeTable({ date: this.formatDate(), campus: this.listQuery.campus }).then(res => {
+    async getTimeTable() {
+      await filterTimeTable({ date: this.formatDate(), campus: this.listQuery.campus }).then(res => {
         const approveList = res.data
         // 处理数据，将同一个厅同一天的放在一起
         const divide = {}
