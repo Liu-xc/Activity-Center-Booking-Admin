@@ -18,7 +18,7 @@ export const asyncRoutes = [
         meta: { title: '预约管理', icon: 'el-icon-s-check', affix: false }
       }
     ],
-    meta: { roles: 1 }
+    meta: { roles: 1, title: '预约管理' }
   },
   {
     path: '/manage',
@@ -31,7 +31,7 @@ export const asyncRoutes = [
         meta: { title: '用户管理', icon: 'el-icon-receiving' }
       }
     ],
-    meta: { roles: 0 }
+    meta: { roles: 0, title: '用户管理' }
   }
 ]
 
@@ -69,7 +69,10 @@ export const constantRoutes = [
           affix: true
         }
       }
-    ]
+    ],
+    meta: {
+      title: '预约情况'
+    }
   },
   {
     path: '/myreserve',
@@ -86,7 +89,10 @@ export const constantRoutes = [
           affix: true
         }
       }
-    ]
+    ],
+    meta: {
+      title: '我的预约'
+    }
   },
   {
     path: '/editreserve',
@@ -105,7 +111,10 @@ export const constantRoutes = [
           affix: true
         }
       }
-    ]
+    ],
+    meta: {
+      title: '编辑预约'
+    }
   }
 
 ]
