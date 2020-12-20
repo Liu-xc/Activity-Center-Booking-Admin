@@ -101,12 +101,6 @@ export default {
       return list
     }
   },
-  mounted() {
-    console.log(this.handledList)
-  },
-  updated() {
-    console.log('updated', this.approveList, this.date)
-  },
   methods: {
     parseTime,
     getStyle(item) {
