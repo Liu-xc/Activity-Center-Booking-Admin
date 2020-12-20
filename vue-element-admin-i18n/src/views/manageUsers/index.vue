@@ -5,12 +5,14 @@
       <!-- $t是用与语言转换的 -->
       <el-input
         v-model="listQuery.workId"
+        type="text"
         placeholder="用户工号"
         style="width: 230px;"
         class="filter-item"
       />
       <el-input
         v-model="listQuery.name"
+        type="text"
         placeholder="用户名称"
         style="width: 230px;"
         class="filter-item"
@@ -157,6 +159,7 @@ import { Department, Authority } from '../../utils/StaticData'
 // import { handleFilter } from '../../utils/formHandlers'
 import { changeAdminLevel, getAdminList, userFilter } from '../../api/user'
 // import { changeAdminLevel } from '../../api/user'
+import { cloneDeep } from 'lodash'
 
 export default {
   name: 'ComplexTable',
@@ -213,7 +216,7 @@ export default {
         department: '',
         authority: '',
         displayPage: 1,
-        displayRows: 5
+        displayRows: 10
       },
       searchTimer: null,
       Department, Authority,
@@ -289,28 +292,6 @@ export default {
       })
       /* 发起请求，请求成功后设置隐藏 */
     },
-    /* 删除一个用户 */
-    // deleteOne (row) {
-
-    //   this.$confirm(`此操作将删除用户 " ${row.name} " , 是否继续?`, '提示', {
-    //     confirmButtonText: '确定',
-    //     cancelButtonText: '取消',
-    //     type: 'warning'
-    //   }).then(() => {
-    //     // deleteAdmin({row.}).then(
-    //     this.$message({
-    //       type: 'success',
-    //       message: '删除成功!'
-    //     })
-    //     // )
-
-    //   }).catch(() => {
-    //     this.$message({
-    //       type: 'info',
-    //       message: '已取消删除'
-    //     })
-    //   })
-    // },
     // 点击审核选中项时触发
     deleteGroup() {
       // 如果没有选中的项就什么也不做
@@ -339,16 +320,12 @@ export default {
     // 获取数据
     getList(filter = false) {
       // getAdminList().then()
-      let cb = getAdminList
-      if (filter) {
-        cb = userFilter
-      }
+      const cb = filter ? userFilter : getAdminList
       this.listLoading = true
-      cb({ ...this.listQuery }).then(response => {
+      cb(cloneDeep(this.listQuery)).then(response => {
         this.list = response.data.list
         this.total = response.data.total
 
-        //   // Just to simulate the time of the request
         this.listLoading = false
       }).catch((reason) => {
         console.log(reason)
