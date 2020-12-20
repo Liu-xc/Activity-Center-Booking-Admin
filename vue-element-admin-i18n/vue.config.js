@@ -1,6 +1,7 @@
 'use strict'
 const path = require('path')
 const defaultSettings = require('./src/settings.js')
+const CompressionPlugin = require("compression-webpack-plugin")
 
 function resolve(dir) {
   return path.join(__dirname, dir)
@@ -10,7 +11,7 @@ const name = defaultSettings.title || 'vue Element Admin' // page title
 const port = process.env.port || process.env.npm_config_port || 9527 // dev port
 module.exports = {
   publicPath: '/',
-  outputDir: 'dist',
+  outputDir: '/dist',
   assetsDir: 'static',
   lintOnSave: process.env.NODE_ENV === 'development',
   productionSourceMap: false,
@@ -39,7 +40,14 @@ module.exports = {
       alias: {
         '@': resolve('src')
       }
-    }
+    },
+    plugins: [
+      new CompressionPlugin({
+        test: /\.js$|\.html$|\.css$|\.jpg$|\.jpeg$|\.png/, // 需要压缩的文件类型
+        threshold: 10240, // 归档需要进行压缩的文件大小最小值，我这个是10K以上的进行压缩
+        deleteOriginalAssets: false // 是否删除原文件
+      })
+    ]
   },
   chainWebpack(config) {
     // it can improve the speed of the first screen, it is recommended to turn on preload
