@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <!-- <el-input v-model="listQuery.activity" style="width: 200px;" placeholder="活动名称" /> -->
+      <el-input v-model="listQuery.activity" style="width: 200px;" placeholder="活动名称" />
 
       <el-select
         v-model.number="listQuery.campus"
@@ -57,25 +57,30 @@
       highlight-current-row
       style="width: 100%; font-size: 10px;"
     >
+      <el-table-column label="活动名称" width="160px" align="center">
+        <template slot-scope="{row}">
+          <span :title="row.activity">{{ row.activity }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="预定场地" width="110px" align="center">
         <template slot-scope="{row}">
           <span>{{ Halls[row.reserveHall + ''] }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="布场时间" width="240px" align="center">
+      <el-table-column label="布场时间" width="200px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.arrangeStart | parseTime('{y}-{m}-{d} {h}:{i}') }} - {{ row.arrangeStart | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <span>{{ row.arrangeStart | parseTime('{y}-{m}-{d} {h}:{i}') }} - {{ row.arrangeStart | parseTime('{h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="彩排时间" width="240px" align="center">
+      <el-table-column label="彩排时间" width="200px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.rehearsalStart | parseTime('{y}-{m}-{d} {h}:{i}') }} - {{ row.rehearsalStart | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <span>{{ row.rehearsalStart | parseTime('{y}-{m}-{d} {h}:{i}') }} - {{ row.rehearsalStart | parseTime('{h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="演出时间" width="240px" align="center">
+      <el-table-column label="演出时间" width="200px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.formalStart | parseTime('{y}-{m}-{d} {h}:{i}') }} - {{ row.formalStart | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <span>{{ row.formalStart | parseTime('{y}-{m}-{d} {h}:{i}') }} - {{ row.formalStart | parseTime('{h}:{i}') }}</span>
         </template>
       </el-table-column>
 
@@ -84,9 +89,9 @@
           <span>{{ ReviewStatus[row.reviewStatus + ''] }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="审核备注" width="300px" align="center">
+      <el-table-column label="审核备注" width="260px" align="center">
         <template slot-scope="{row}">
-          <div class="review-response">{{ row.reviewResponse }}</div>
+          <div class="review-response" :title="row.reviewResponse">{{ row.reviewResponse }}</div>
         </template>
       </el-table-column>
 
