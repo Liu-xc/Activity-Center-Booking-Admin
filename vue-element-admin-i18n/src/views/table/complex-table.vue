@@ -210,6 +210,7 @@
                 :key="ReviewStatus[item]"
                 :label="item*1"
                 :value="item"
+                :disabled="item * 1 <= 1"
               >{{ ReviewStatus[item] }}</el-radio>
             </template>
           </el-radio-group>
@@ -245,6 +246,7 @@ import { Campuses, Halls, Department, Authority, ActivityType, ReviewStatus } fr
 import { handleFilter } from '../../utils/formHandlers'
 import { approve, filterApprove } from '../../api/approve'
 import { getExcel } from '@/api/excel'
+import { cloneDeep } from 'lodash'
 
 export default {
   name: 'ComplexTable',
@@ -301,7 +303,7 @@ export default {
       this.auditDialogVisible = true
       this.auditListLen = 1
       this.conflictList = []
-      this.itemToAudit = row
+      this.itemToAudit = cloneDeep(row)
       // }
       // 然后再展示出来进行审核
       // 需要一个loading效果
@@ -313,7 +315,7 @@ export default {
         this.auditChecked = true
         this.auditDialogVisible = true
         this.auditListLen = this.checkedList.length
-        this.itemToAudit = this.checkedList[0]
+        this.itemToAudit = cloneDeep(this.checkedList[0])
       }
       // 有空的话加一个提示信息
     },
@@ -323,13 +325,14 @@ export default {
     },
     // 当审核界面的分页器页数切换时触发
     changeAuditIndex(val) {
-      this.itemToAudit = this.auditChecked ? this.checkedList[val - 1] : this.conflictList[val - 1]
+      this.itemToAudit = this.auditChecked ? cloneDeep(this.checkedList[val - 1]) : cloneDeep(this.conflictList[val - 1])
     },
     checkDetail(val) {
       this.dialogFormVisible = true
       this.imgToCheck = val.imageUrl
     },
     _handleFilter() {
+      this.listQuery.DisplayPage = 1
       handleFilter(this, this.getList)
     },
     /* 将行元素设置为待导出的对象 */
@@ -364,20 +367,22 @@ export default {
       })
     },
     /* 发布修改 */
-    onSubmitAudit() {
+    async onSubmitAudit() {
       /* 将当前编辑的项提交 */
       const params = {
         aid: this.itemToAudit.aid,
         reviewStatus: this.itemToAudit.reviewStatus * 1,
         reviewResponse: this.itemToAudit.remarks
       }
-      approve(params).then(res => {
+      await approve(params).then(res => {
         /* 加一个加载效果或者提示 */
         this.$message({
           showClose: true,
           message: '修改成功',
           type: 'success'
         })
+        this.getList()
+        this.auditDialogVisible = false
       },
       () => {
         this.$message({

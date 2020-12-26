@@ -7,51 +7,45 @@ import { getUrlParams } from '@/utils/getURLParams'
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
 router.beforeEach(async(to, from, next) => {
-  document.title = to.meta.title
+  history.pushState = () => {}
+  history.go = () => {}
+  history.back = () => {}
+  // 检查是否登录
+  document.title = to.meta.title || '活动中心预约系统'
   const flag = !!sessionStorage.getItem('token')
   const appId = sessionStorage.getItem('appId') || getUrlParams(window.location.href, 'appId') || 52
   const token = sessionStorage.getItem('token') || getUrlParams(window.location.href, 'token')
-  NProgress.start()
   if (flag) {
-    const roles = (await store.getters.userinfo.authority) || sessionStorage.getItem('authority')
+    // 已登录
+    const roles = sessionStorage.getItem('authority')
     const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
     resetRouter(router)
     router.addRoutes(accessRoutes)
   }
-  if (!store.getters.userinfo.uid) {
-    const appId = getUrlParams(window.location.href, 'appId') || sessionStorage.getItem('appId') || 52
-    const token = getUrlParams(window.location.href, 'token') || sessionStorage.getItem('token')
+  NProgress.start()
+  if (store.getters.userinfo.name) {
+    next()
+  } else if (!store.getters.userinfo.name && sessionStorage.getItem('name')) {
+    // 刷新的情况
+    const info = {
+      authority: sessionStorage.getItem('authority'),
+      name: sessionStorage.getItem('name'),
+      uid: sessionStorage.getItem('uid'),
+      workId: sessionStorage.getItem('workId'),
+      department: sessionStorage.getItem('department')
+    }
+    store.commit('user/SET_USERINFO', info)
+    next(to.path)
+  } else if (!sessionStorage.getItem('name')) {
+    // 未登录
+    sessionStorage.setItem('token', token)
+    sessionStorage.setItem('appId', appId)
     await store.dispatch('user/login', { appId: appId, token: token })
       .then(() => {
-        const path = to.path === '/' ? '/overall' : to.path
-        router.push({ path: path })
+        next('/overall/index')
       })
       .catch(() => {
       })
-    window.onbeforeunload = async e => { // 刷新时弹出提示
-      return ''
-    }
-  } else if (!flag && token && appId) {
-    sessionStorage.setItem('token', token)
-    sessionStorage.setItem('appId', appId)
-    next({ path: '/', query: { appId, token }})
-  } else if (flag && token && appId) {
-    if (flag) {
-      try {
-        const rootRoute = to.path === '/' && from.path === '/'
-        if (rootRoute) {
-          router.push({ path: '/overall' })
-        } else {
-          next()
-        }
-      } catch (error) {
-        console.log(error)
-        next()
-        NProgress.done()
-      }
-    }
-  } else {
-    next()
   }
 })
 

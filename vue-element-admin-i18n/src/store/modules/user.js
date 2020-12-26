@@ -31,6 +31,11 @@ const actions = {
         sessionStorage.setItem('authority', response.data.authority)
         const { data } = response
         commit('SET_USERINFO', data)
+        sessionStorage.setItem('uid', data.uid)
+        sessionStorage.setItem('workId', data.workId)
+        sessionStorage.setItem('department', data.department)
+        sessionStorage.setItem('authority', data.authority)
+        sessionStorage.setItem('name', data.name)
         resolve()
       }).catch(error => {
         reject(error)

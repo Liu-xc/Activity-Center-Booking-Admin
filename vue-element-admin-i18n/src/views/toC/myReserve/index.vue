@@ -46,7 +46,15 @@
           :value="ReviewStatus[item]"
         />
       </el-select>
-      <el-button class="filter-item" type="primary" icon="el-icon-search" @click="getReserveList">搜索</el-button>
+      <el-button
+        class="filter-item"
+        type="primary"
+        icon="el-icon-search"
+        @click="_getReserveList"
+      >搜索</el-button>
+      <el-button class="filter-item" type="primary">
+        <router-link to="/editreserve/index">新建</router-link>
+      </el-button>
     </div>
 
     <el-table
@@ -120,6 +128,7 @@
         :limit.sync="listQuery.displayRows"
         :page-sizes="[10, 15, 20, 30, 40, 50]"
         style="margin: 10px;"
+        @pagination="getReserveList"
       />
     </div>
     <el-dialog title="上传图片" :visible.sync="imgUploadPanel.show" width="30%">
@@ -246,8 +255,12 @@ export default {
           console.log(err)
         })
     },
-    getReserveList() {
-      filterMyRequest(cloneDeep(this.listQuery)).then(
+    _getReserveList() {
+      this.listQuery.displayPage = 1
+      this.getReserveList()
+    },
+    async getReserveList() {
+      await filterMyRequest(cloneDeep(this.listQuery)).then(
         res => {
           this.list = res.data.list
           this.total = res.data.total

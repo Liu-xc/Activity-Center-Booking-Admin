@@ -2,9 +2,9 @@
   <div class="new-reserve-container">
     <el-form ref="form" :model="form" :rules="rules" class="new-reserve-form" label-width="160px">
       <el-form-item label="会议室" required prop="reserveHall">
-        <el-col :span="12">
-          <el-input v-model="form.reserveHall" />
-        </el-col>
+        <el-select v-model="form.reserveHall" placeholder>
+          <el-option v-for="hall of Halls" :key="hall" :value="hall">{{ hall }}</el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="活动名称" required prop="activity">
         <el-col :span="12">
@@ -90,7 +90,10 @@
       </el-col>
       <el-col :span="10">
         <el-form-item label="申请部门" required prop="activityDepartment">
-          <el-input v-model="form.activityDepartment" />
+          <el-input
+            disabled
+            :placeholder="Department[this.$store.getters.userinfo.department + '']"
+          />
         </el-form-item>
       </el-col>
       <el-col :span="10">
@@ -129,6 +132,7 @@ export default {
   name: 'EditReserve',
   data() {
     return {
+      Halls, Department,
       isEditPage: false,
       query: {},
       form: {
@@ -150,7 +154,7 @@ export default {
         applicant: '',
         contact: '',
         remarks: '',
-        activityDepartment: ''
+        activityDepartment: this.$store.getters.userinfo.department
       },
       rules: {
         reserveHall: [

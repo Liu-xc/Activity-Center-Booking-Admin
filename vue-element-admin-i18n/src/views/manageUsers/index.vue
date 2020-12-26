@@ -249,7 +249,7 @@ export default {
     /* 修改用户的等级 */
     changeLevel(row) {
       this.auditDialogVisible = true
-      this.userToHandle = row
+      this.userToHandle = cloneDeep(row)
     },
     /* 添加一个用户 */
     addUser() {
@@ -259,7 +259,7 @@ export default {
     /* 以下为需要发起请求的方法 */
 
     /* 提交修改 */
-    onSubmitChange() {
+    async onSubmitChange() {
       // 发布修改并且关闭弹窗
       const data = {
         uid: this.userToHandle.uid,
@@ -272,6 +272,7 @@ export default {
           message: '修改成功!'
         })
         this.auditDialogVisible = false
+        this.getList(true)
       }).catch(() => {
 
       })
@@ -283,7 +284,6 @@ export default {
       // setAdmin().then()
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          alert('submit!')
           this.addUserDialogVisible = false
         } else {
           console.log('error submit!!')
@@ -318,11 +318,11 @@ export default {
       // 有空的话加一个提示信息
     },
     // 获取数据
-    getList(filter = false) {
+    async getList(filter = false) {
       // getAdminList().then()
       const cb = filter ? userFilter : getAdminList
       this.listLoading = true
-      cb(cloneDeep(this.listQuery)).then(response => {
+      await cb(cloneDeep(this.listQuery)).then(response => {
         this.list = response.data.list
         this.total = response.data.total
 
