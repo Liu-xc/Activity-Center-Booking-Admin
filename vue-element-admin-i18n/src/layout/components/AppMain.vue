@@ -1,7 +1,10 @@
 <template>
   <section class="app-main">
     <transition name="fade-transform" mode="out-in">
-      <keep-alive v-if="key !== '/editreserve/index'" :include="cachedViews">
+      <keep-alive
+        v-if="key !== '/editreserve/index' && key !== '/manage/index'"
+        :include="cachedViews"
+      >
         <router-view :key="key" />
       </keep-alive>
       <template v-else>

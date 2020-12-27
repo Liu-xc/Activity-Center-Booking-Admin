@@ -23,6 +23,7 @@ export const asyncRoutes = [
   {
     path: '/manage',
     component: Layout,
+    redirect: '/manage/index',
     children: [
       {
         path: 'index',

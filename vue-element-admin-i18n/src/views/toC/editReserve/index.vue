@@ -206,6 +206,7 @@ export default {
       this.form.activityDepartment = Department[this.form.activityDepartment + '']
     },
     onSubmit() {
+      this.form.activityDepartment = Department[this.$store.getters.userinfo.department + '']
       this.$refs['form'].validate((valid) => {
         if (valid) {
           this.sendApply(cloneDeep(this.form))
