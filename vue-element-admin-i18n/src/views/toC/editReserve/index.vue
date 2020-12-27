@@ -6,6 +6,11 @@
           <el-option v-for="hall of Halls" :key="hall" :value="hall">{{ hall }}</el-option>
         </el-select>
       </el-form-item>
+      <el-form-item label="活动类别" required prop="activityType">
+        <el-select v-model="form.activityType" clearable placeholder>
+          <el-option v-for="type of ActivityType" :key="type" :value="type">{{ type }}</el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item label="活动名称" required prop="activity">
         <el-col :span="12">
           <el-input v-model="form.activity" />
@@ -124,7 +129,7 @@
 
 <script>
 import { newApply, updateApply } from '@/api/reserve'
-import { Department, Halls } from '@/utils/StaticData'
+import { Department, Halls, QSHalls, KeyHalls, ActivityType } from '@/utils/StaticData'
 import { cloneDeep } from 'lodash'
 import { presetForm } from './index.js'
 
@@ -132,10 +137,11 @@ export default {
   name: 'EditReserve',
   data() {
     return {
-      Halls, Department,
+      Halls, Department, QSHalls, KeyHalls, ActivityType,
       isEditPage: false,
       query: {},
       form: {
+        activityType: '',
         reserveHall: '',
         activity: '',
         arrangeDate: '',
@@ -154,7 +160,8 @@ export default {
         applicant: '',
         contact: '',
         remarks: '',
-        activityDepartment: this.$store.getters.userinfo.department
+        activityDepartment: this.$store.getters.userinfo.department,
+        campus: 0
       },
       rules: {
         reserveHall: [
@@ -183,6 +190,9 @@ export default {
         ],
         contact: [
           { required: true, message: '请输入联系方式' }
+        ],
+        activityType: [
+          { required: true, message: '请选择活动类型' }
         ]
       }
     }
@@ -197,6 +207,13 @@ export default {
   created() {
     this.$root.isEdit && this.getFormFromroot()
     this.$root.isEdit && this.$nextTick(() => this.$refs['form'].clearValidate())
+    const department = this.$store.getters.userinfo.department + ''
+    if (department !== '0') {
+      for (const hall of KeyHalls) {
+        delete this.Halls[hall]
+      }
+    }
+    console.log(this.form)
   },
   methods: {
     getFormFromroot() {
@@ -204,9 +221,18 @@ export default {
       this.form = cloneDeep(this.$root.editForm)
       this.form.reserveHall = Halls[this.form.reserveHall + '']
       this.form.activityDepartment = Department[this.form.activityDepartment + '']
+      this.form.activityType = ActivityType[this.form.activityType + '']
     },
     onSubmit() {
       this.form.activityDepartment = Department[this.$store.getters.userinfo.department + '']
+      for (const key in Object.keys(QSHalls)) {
+        if (QSHalls[key] === this.form.reserveHall) {
+          this.form.campus = 0
+          break
+        } else {
+          this.form.campus = 1
+        }
+      }
       this.$refs['form'].validate((valid) => {
         if (valid) {
           this.sendApply(cloneDeep(this.form))

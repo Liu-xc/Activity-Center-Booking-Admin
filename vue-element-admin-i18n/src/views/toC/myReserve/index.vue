@@ -2,7 +2,9 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input v-model="listQuery.activity" style="width: 200px;" placeholder="活动名称" />
-
+      <el-select v-model="listQuery.activityType" clearable class="filter-item" placeholder="活动类型">
+        <el-option v-for="type of ActivityType" :key="type" :value="type">{{ type }}</el-option>
+      </el-select>
       <el-select
         v-model.number="listQuery.campus"
         placeholder="校区"
@@ -190,7 +192,7 @@ export default {
         campus: null,
         reviewStatus: null,
         reserveHall: null,
-        activityType: null,
+        activityType: '',
         activity: null
       },
       rules: {

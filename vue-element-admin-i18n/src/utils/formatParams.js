@@ -55,7 +55,7 @@ function transParams(params) {
       }
     }
   }
-  if (params.activityType !== '') {
+  if (['会议', '演出'].indexOf(params.activityType) !== -1) {
     for (const item in ActivityType) {
       if (ActivityType[item] === params.activityType) {
         params.activityType = item * 1

@@ -54,6 +54,22 @@ const Halls = {
   '9': '咖啡厅'
 }
 
+const QSHalls = {
+  '0': '九州厅',
+  '1': '圆厅',
+  '2': '201',
+  '3': '202',
+  '4': '204',
+  '5': '216'
+}
+
+const SHHalls = {
+  '6': '夏新厅',
+  '7': '会议室',
+  '8': '舞蹈排练厅',
+  '9': '咖啡厅'
+}
+
 const ActivityType = {
   '0': '会议',
   '1': '演出'
@@ -71,4 +87,6 @@ const Campuses = {
   '1': '沙河'
 }
 
-export { Campuses, Halls, Department, Authority, ActivityType, ReviewStatus }
+const KeyHalls = ['3', '4', '5']
+
+export { Campuses, Halls, Department, Authority, ActivityType, ReviewStatus, QSHalls, SHHalls, KeyHalls }

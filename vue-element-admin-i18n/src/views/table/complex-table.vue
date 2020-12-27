@@ -15,6 +15,9 @@
         style="width: 300px;"
         class="filter-item"
       />
+      <el-select v-model="listQuery.activityType" clearable class="filter-item" placeholder="活动类型">
+        <el-option v-for="type of ActivityType" :key="type" :value="type">{{ type }}</el-option>
+      </el-select>
       <el-select
         v-model.number="listQuery.campus"
         placeholder="校区"
@@ -269,7 +272,8 @@ export default {
         reviewStatus: '待审核',
         reserveHall: '',
         imgs: [],
-        remarks: ''
+        remarks: '',
+        activityType: ''
       },
       imgToCheck: null,
       tableKey: 0,

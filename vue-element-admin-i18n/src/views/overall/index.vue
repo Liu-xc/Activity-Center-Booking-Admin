@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import { Campuses, Halls, QSHalls, SHHalls } from '../../utils/StaticData'
+import { Campuses, Halls } from '../../utils/StaticData'
 import OverallTable from './components/overallTable'
 import { filterTimeTable } from '@/api/overall'
 
@@ -45,8 +45,6 @@ export default {
       },
       Campuses,
       Halls,
-      QSHalls,
-      SHHalls,
       halls: this.Halls,
       approveList: []
     }
